@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eslabon"
+dynamic = ["version"]
+description = "Supply chain risk orchestrator: correlates weak signals from open source scanners and emits SIEM-ready alerts mapped to MITRE ATT&CK."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "Guillermo Tosetti" }]
+keywords = ["supply-chain", "sbom", "security", "siem", "wazuh", "sigma", "osv"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+dependencies = [
+    "typer>=0.12",
+    "pydantic>=2.7",
+    "rich>=13.7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+eslabon = "eslabon.cli:app"
+
+[tool.hatch.version]
+path = "src/eslabon/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eslabon"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integracion: ejecuta las herramientas externas reales (Syft, OSV-Scanner); se salta si no estan instaladas",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "BLE", "UP", "S", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# assert es la forma normal de escribir tests en pytest.
+"tests/**" = ["S101"]
+# Llamamos a procesos externos a proposito; nunca con shell=True.
+"src/eslabon/ejecutor.py" = ["S603"]

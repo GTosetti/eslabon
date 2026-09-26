@@ -1,0 +1,4 @@
+# Proyecto de prueba: SOLO se lee, nunca se instala.
+requests==2.19.0
+jinja2==2.10
+urllib3==1.23

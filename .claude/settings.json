@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(./**)",
+      "Edit(./**)",
+      "Write(./**)",
+      "Bash(git init:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(python:*)",
+      "Bash(py:*)",
+      "Bash(.venv/Scripts/python.exe:*)",
+      "Bash(.venv/Scripts/pip.exe:*)",
+      "Bash(pytest:*)",
+      "Bash(ruff:*)",
+      "Bash(syft:*)",
+      "Bash(osv-scanner:*)",
+      "Bash(guarddog:*)",
+      "Bash(scorecard:*)",
+      "Bash(eslabon:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:api.deps.dev)",
+      "WebFetch(domain:api.osv.dev)",
+      "WebFetch(domain:osv.dev)",
+      "WebFetch(domain:pypi.org)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(gh repo create:*)",
+      "Bash(twine upload:*)",
+      "Bash(npm install:*)",
+      "Bash(npm i:*)",
+      "Bash(yarn:*)",
+      "Bash(pnpm:*)",
+      "Read(../GG+/**)",
+      "Edit(../GG+/**)"
+    ]
+  }
+}
