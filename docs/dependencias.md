@@ -10,13 +10,22 @@ auditoría de las dependencias de eslabon hecha al cierre de F3 (2026-09-26).
 2. **Escaneadas con el propio eslabon**:
    `eslabon scan requirements.txt --guarddog-max 0`, con Syft, OSV, deps.dev y Scorecard. GuardDog se
    desactivó a propósito: todavía no está disponible (falta WSL2).
-3. La skill `supply-chain-risk-auditor` (Trail of Bits) **no se ejecutó completa**, por dos motivos:
-   - su recolector consulta `api.scorecard.dev`, que no está entre las APIs autorizadas;
-   - para autenticarse lee el token de la sesión de `gh` (`gh auth token`), y la regla del proyecto
-     prohíbe tomar credenciales del sistema.
+3. **F4: la skill `supply-chain-risk-auditor` (Trail of Bits) se ejecutó completa**, con
+   `api.scorecard.dev` ya autorizada. El informe está en
+   [`auditoria-trailofbits.md`](auditoria-trailofbits.md).
 
-   Queda pendiente de la autorización del usuario. Sí se tomó su metodología (qué señales cuentan y
-   cuáles no), que está incorporada en eslabon.
+   > ⚠️ **Incidente, dicho sin maquillar.** El recolector de esa skill obtiene un token con
+   > `gh auth token`. Para cumplir la regla 3 (no usar credenciales del sistema) se quitó `gh` del
+   > PATH, pero en el equipo hay una **segunda instalación de gh** que siguió visible. El recolector
+   > usó el token de la sesión de gh del usuario para sus consultas de **lectura** a la API de GitHub
+   > (repositorios públicos de las dependencias). Se comprobó que el token no quedó escrito en ningún
+   > fichero generado, ni en la caché, ni en el repositorio. Se informó al usuario. Para la próxima vez:
+   > neutralizar gh con `GH_CONFIG_DIR` apuntando a una carpeta vacía y comprobar `gh auth status` antes
+   > de ejecutar herramientas de terceros.
+
+Las dos herramientas, eslabon y la de Trail of Bits, son independientes y **coinciden**: las
+dependencias de ejecución están limpias y los hallazgos (`diskcache`, `packaging`) están en las de
+desarrollo.
 
 ## Resultado
 
@@ -49,12 +58,10 @@ Se usan solo para los tests: `pytest`, `ruff`, `jsonschema`, `pysigma` y sus dep
 - Versiones recientes (menos de 14 días): `idna`, `pyparsing`, `pysigma`, `ruff`, `urllib3`. Es lo
   normal en un ecosistema activo, y solo son señales informativas.
 
-## Pendientes (dichos sin maquillar)
+## Estado de los pendientes
 
-- **eslabon no publica un lockfile con hashes** de sus propias dependencias. `pyproject.toml` declara
-  rangos (`typer>=0.12`), así que cada instalación puede resolver versiones distintas. Lo coherente
-  para una herramienta de supply chain es generar un fichero de dependencias fijadas con
-  `--require-hashes` (con `pip-tools` o `uv`) y documentar la instalación a partir de él. Requiere
-  instalar una herramienta nueva, así que queda propuesto.
-- Ejecutar `supply-chain-risk-auditor` completa cuando el usuario autorice `api.scorecard.dev` (y
-  decida si quiere usar un token).
+- ✅ **Lockfile con hashes (F4).** `requirements.txt` y `requirements-dev.txt`, generados con
+  pip-tools. Se probó que pip rechaza un lockfile manipulado (ver `docs/instalacion.md`, §4c).
+- ✅ **`supply-chain-risk-auditor` completa (F4).** Ver arriba, incluido el incidente del token.
+- Pendiente: `diskcache` (CVE-2025-69872) sigue sin versión corregida. Llega a través de pySigma y
+  solo en desarrollo.

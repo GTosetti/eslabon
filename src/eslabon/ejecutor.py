@@ -19,6 +19,7 @@ Reglas de seguridad de este módulo:
 
 from __future__ import annotations
 
+import contextlib
 import functools
 import json
 import os
@@ -26,6 +27,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -140,6 +142,33 @@ def resolver_comando(herramienta: Herramienta) -> list[str]:
     return [ruta]
 
 
+def _nombrar_contenedor(comando: list[str],
+                        herramienta: Herramienta) -> tuple[list[str], str | None]:
+    """Si la herramienta corre con `docker run`, le pone al contenedor un nombre único.
+
+    Al vencer el timeout, Python mata el proceso `docker`, pero el CONTENEDOR seguiría vivo
+    (descargando y analizando). Con un nombre conocido se lo puede detener con `docker kill`.
+    """
+    if Path(comando[0]).stem.lower() not in {"docker", "podman"} or "run" not in comando[1:]:
+        return list(comando), None
+    # "run" puede ir tras opciones globales ("docker --context lab run") o tras "container".
+    i = comando.index("run", 1) + 1
+    for j, parte in enumerate(comando[i:], start=i):
+        if parte == "--name" and j + 1 < len(comando):
+            return list(comando), comando[j + 1]  # ya tiene nombre: se usa ese
+        if parte.startswith("--name="):
+            return list(comando), parte.split("=", 1)[1]
+    nombre = f"eslabon-{herramienta.nombre}-{uuid.uuid4().hex[:12]}"
+    return [*comando[:i], "--name", nombre, *comando[i:]], nombre
+
+
+def _matar_contenedor(docker: str, nombre: str) -> None:
+    # Si no se pudo, --rm lo borrará igual cuando termine por su cuenta.
+    with contextlib.suppress(OSError, subprocess.SubprocessError):
+        subprocess.run([docker, "kill", nombre], capture_output=True, timeout=30, check=False,
+                       env=entorno_seguro())
+
+
 def ejecutar(
     herramienta: Herramienta,
     argumentos: list[str],
@@ -147,7 +176,8 @@ def ejecutar(
     timeout: float,
     codigos_ok: tuple[int, ...] = (0,),
 ) -> subprocess.CompletedProcess[str]:
-    comando = resolver_comando(herramienta) + argumentos
+    comando, contenedor = _nombrar_contenedor(resolver_comando(herramienta), herramienta)
+    comando += argumentos
     try:
         proceso = subprocess.run(
             comando,
@@ -162,6 +192,8 @@ def ejecutar(
     except FileNotFoundError as exc:
         raise HerramientaNoDisponible(f"{herramienta.nombre}: {exc}") from exc
     except subprocess.TimeoutExpired as exc:
+        if contenedor:
+            _matar_contenedor(comando[0], contenedor)
         raise HerramientaFallo(
             f"{herramienta.nombre} superó el tiempo límite ({timeout}s)"
         ) from exc

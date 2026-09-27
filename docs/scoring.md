@@ -143,6 +143,20 @@ semanal publicado en deps.dev (se indica en `datos.origen` de la evidencia).
 | `deceptive_author` | 0,25 | Correo desechable. Débil. |
 | `bundled_binary`, `direct_url_dependency` | 0,20 | Prácticas poco auditables, frecuentes en paquetes sanos. |
 
+Las capacidades solas **no generan hallazgo**: en las grabaciones reales de GuardDog sobre `requests`
+y `lodash` (paquetes sanos) aparecían varias. Solo acompañan a una señal de verdad.
+
+### Registro de npm (quién publicó y qué se ejecuta al instalar)
+
+| Señal | p | Justificación |
+|---|---|---|
+| `npm-publicador-nuevo` | 0,35 | La versión la publicó una **cuenta** distinta de la que publicó la anterior. Es el mecanismo de las tomas de control por cesión o robo de cuenta (event-stream 3.3.5: `dominictarr` → `right9ctrl`). No es más alta porque los equipos rotan quién publica. Se compara la cuenta, no el correo: cambiar de correo no es cambiar de dueño (lodash cambió de correo con la misma cuenta). |
+| `npm-script-instalacion-red` | 0,35 | Un `preinstall`/`install`/`postinstall` que descarga o ejecuta código (`curl`, `wget`, una URL, `node -e`, `eval`, base64…). Ese script corre con los permisos de quien instala, antes de que nadie revise nada. |
+| `npm-script-instalacion` | 0,05 | Un script de instalación "normal" (p. ej. `node-gyp rebuild` para compilar código nativo). Solo contexto: **no genera hallazgo** por sí solo. |
+
+La "versión anterior" se calcula con las fechas de publicación de deps.dev, sin contar los tapones
+`-security`.
+
 ## 5. Ejemplos calculados
 
 **A. Paquete malicioso conocido (caso real, test de la condición de salida de F2)**
@@ -157,8 +171,30 @@ semanal publicado en deps.dev (se indica en `datos.origen` de la evidencia).
 | Red durante la instalación | GuardDog | 0,60 | media |
 | Workflow peligroso en el repo | Scorecard | 0,30 | baja |
 
-Juntas: `1 − 0,8 · 0,4 · 0,7 = 0,776` → **media**, con T1195.001 y T1195.002. Con una cuarta fuente
-que confirmara un mantenedor nuevo (p = 0,4), subiría a `1 − 0,8·0,4·0,7·0,6 = 0,87` → **alta**.
+Juntas: `1 − 0,8 · 0,4 · 0,7 = 0,776` → **media**, con T1195.001 y T1195.002. Si además el
+registro de npm mostrara un publicador nuevo (p = 0,35, una cuarta fuente), subiría a
+`1 − 0,8 · 0,4 · 0,7 · 0,65 = 0,85` → **alta**.
+
+**C. Caso real sin ningún aviso: `event-stream@3.3.5`** (test
+`test_event_stream_335_sin_avisos_lo_delata_la_correlacion`, y verificado en vivo)
+
+Es la primera versión que publicó el atacante, antes de añadir `flatmap-stream` en 3.3.6. **No tiene
+CVE, GHSA ni MAL-**: ningún escáner de avisos la marca.
+
+| Señal | Fuente | p | Dato real |
+|---|---|---|---|
+| Reactivación tras más de un año | deps.dev | 0,25 | 3.3.4 salió el 2016-07-17; 3.3.5, 779 días después |
+| Publicador nuevo | npm | 0,35 | 3.3.4: `dominictarr`; 3.3.5: `right9ctrl` |
+| Repositorio sin mantenimiento | Scorecard | 0,10 | `Maintained = 0/10` (repositorio archivado) |
+
+`1 − 0,75 · 0,65 · 0,90 = 0,561` → **sospechoso, media**, con T1195.001 y T1195.002. Cada señal sola
+daría baja o info. Esta es la tesis de eslabon en un caso real.
+
+**D. El patrón exacto del encargo** (versión reciente + script de instalación con red + mantenedor
+nuevo): las dos señales de npm salen de la **misma** fuente, así que cuenta solo la más fuerte (0,35).
+Con deps.dev (0,20) y GuardDog (0,60): `1 − 0,65 · 0,8 · 0,4 = 0,792` → **media**, justo por debajo de
+alta. Es la regla 2 siendo conservadora a propósito: si se quisiera que ese patrón fuese "alta",
+lo honesto es calibrar los pesos con datos (ver §6), no subirlos a mano.
 
 ## 6. Límites (dichos sin maquillar)
 
@@ -170,8 +206,11 @@ que confirmara un mantenedor nuevo (p = 0,4), subiría a `1 − 0,8·0,4·0,7·0
 - **El supuesto de independencia entre fuentes es aproximado.** Por ejemplo, GuardDog y Scorecard
   pueden estar correlacionados en paquetes abandonados. La regla 2 mitiga la dependencia dentro de una
   misma fuente, no entre fuentes.
-- **La señal "mantenedor nuevo" no está implementada.** Requiere consultar `registry.npmjs.org` (el
-  campo `_npmUser` de cada versión), que queda fuera de las APIs autorizadas en esta fase. GuardDog cubre
-  una parte con sus reglas de dominio de correo.
+- **Solapamiento entre npm y GuardDog.** El script de instalación lo ven las dos fuentes: el registro
+  de npm (el texto del script) y GuardDog (sus reglas `threat-npm-preinstall-script` y
+  `threat-process-hooks`, que leen el mismo `package.json`). Ahí la independencia de la regla 3 es
+  optimista. Mitigación: pesos moderados en las dos (0,35 y la severidad de la regla).
+- **"Publicador nuevo" solo existe para npm.** PyPI no publica quién subió cada versión en su API
+  pública, así que para PyPI esta señal no es evaluable (y eso no es evidencia de riesgo).
 - **GuardDog es caro:** descarga y analiza cada paquete. Por defecto analiza los primeros 20 del
   inventario (`--guarddog-max`), y si omite paquetes lo dice en `fuentes_omitidas`.

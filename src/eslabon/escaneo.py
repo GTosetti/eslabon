@@ -13,6 +13,7 @@ from pathlib import Path
 
 from eslabon import __version__
 from eslabon.api_depsdev import ClienteDepsDev
+from eslabon.api_npm import ClienteNpm
 from eslabon.colectores import AnalisisParcial, Colector, Contexto
 from eslabon.correlador import correlacionar
 from eslabon.modelos import Finding, FuenteOmitida, Paquete, ResultadoScan
@@ -20,7 +21,8 @@ from eslabon.sbom import generar_sbom
 
 
 def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: float,
-             depsdev: ClienteDepsDev | None = None) -> ResultadoScan:
+             depsdev: ClienteDepsDev | None = None,
+             npm: ClienteNpm | None = None) -> ResultadoScan:
     omitidas: list[FuenteOmitida] = []
     usadas: list[str] = []
     hallazgos: list[Finding] = []
@@ -50,7 +52,8 @@ def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: 
     if paquetes:
         with tempfile.TemporaryDirectory(prefix="eslabon-") as tmp:
             ctx = Contexto(dir_trabajo=Path(tmp), timeout=timeout,
-                           depsdev=depsdev or ClienteDepsDev(timeout=min(timeout, 30)))
+                           depsdev=depsdev or ClienteDepsDev(timeout=min(timeout, 30)),
+                           npm=npm or ClienteNpm(timeout=min(timeout, 30)))
             # Los colectores son independientes y pasan casi todo el tiempo esperando
             # (procesos externos, red), así que se ejecutan en paralelo.
             with ThreadPoolExecutor(max_workers=max(len(colectores), 1)) as grupo:

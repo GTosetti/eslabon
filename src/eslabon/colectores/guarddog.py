@@ -19,7 +19,7 @@ from __future__ import annotations
 from eslabon.colectores.base import Colector, Contexto, en_paralelo, entregar
 from eslabon.ejecutor import Herramienta, HerramientaFallo, ejecutar_json
 from eslabon.modelos import Evidencia, Finding, Paquete
-from eslabon.senales import CATALOGO, evidencia, hallazgo_de_senales
+from eslabon.senales import CATALOGO, evidencia, hallazgo_si_hay_senal
 
 GUARDDOG = Herramienta("guarddog", "guarddog", "ESLABON_GUARDDOG")
 
@@ -64,8 +64,9 @@ def _analizar(p: Paquete, ctx: Contexto) -> Finding | None:
         raise HerramientaFallo("guarddog no devolvió JSON")
     if "results" not in doc:  # p. ej. falló la descarga del paquete
         raise HerramientaFallo("; ".join(f"{k}: {v}" for k, v in (doc.get("errors") or {}).items()))
-    evidencias = evidencias_de_guarddog(doc)
-    return hallazgo_de_senales(p, evidencias) if evidencias else None
+    # Las capacidades ("puede abrir conexiones", "puede borrar ficheros") describen a casi
+    # cualquier paquete sano (grabación real: requests y lodash): son señales de contexto.
+    return hallazgo_si_hay_senal(p, evidencias_de_guarddog(doc))
 
 
 def evidencias_de_guarddog(doc: dict) -> list[Evidencia]:

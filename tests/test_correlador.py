@@ -8,7 +8,7 @@ from eslabon.correlador import confianza_combinada, correlacionar, severidad_por
 from eslabon.escaneo import escanear
 from eslabon.modelos import Ecosistema, Evidencia, Finding, Severidad, Tipo
 from eslabon.sbom import paquete_desde_texto
-from eslabon.senales import evidencia
+from eslabon.senales import evidencia, hallazgo_de_senales
 
 
 class _OSVGrabado(Colector):
@@ -149,3 +149,18 @@ def test_malicioso_absorbe_senales_debiles_del_mismo_paquete():
 ])
 def test_bandas_de_confianza(confianza, sev):
     assert severidad_por_confianza(confianza) is sev
+
+
+def test_patron_del_encargo_con_dos_senales_npm_queda_en_media():
+    # El patrón del encargo: publicador nuevo + script de instalación con red + versión reciente.
+    p = paquete_desde_texto("npm:x@1.0.0")
+    senales = [
+        hallazgo_de_senales(p, [evidencia("npm", "npm-publicador-nuevo"),
+                                evidencia("npm", "npm-script-instalacion-red")]),
+        hallazgo_de_senales(p, [evidencia("depsdev", "depsdev-version-reciente")]),
+        hallazgo_de_senales(p, [evidencia("guarddog", "guarddog-amenaza-alta")]),
+    ]
+    [h] = correlacionar(senales)
+    # npm aporta 0.35 (máximo de su fuente), deps.dev 0.20 y GuardDog 0.60.
+    assert h.confianza == pytest.approx(1 - 0.65 * 0.8 * 0.4, abs=1e-3)  # 0.792
+    assert h.severidad is Severidad.MEDIA

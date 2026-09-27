@@ -32,6 +32,8 @@ dev = [
     # Solo para los tests de F3: validar el SARIF contra el esquema oficial y las reglas Sigma.
     "jsonschema>=4.20",
     "pysigma>=0.11",
+    # Para regenerar los lockfiles con hashes (requirements*.txt).
+    "pip-tools>=7.4",
 ]
 
 [project.scripts]

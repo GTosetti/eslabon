@@ -168,31 +168,46 @@ winget install --id Docker.DockerDesktop --exact --accept-package-agreements --a
 # -> "Successfully verified installer hash" ... "Successfully installed"
 ```
 
-**Paso pendiente, a cargo del usuario.** El motor de Docker necesita WSL2, que no está instalado, y
-esto requiere permisos de administrador y reiniciar:
+**WSL2 (hecho por el usuario, F4).** El motor de Docker necesita WSL2, que requiere permisos de
+administrador y reiniciar:
 
 ```powershell
 # PowerShell COMO ADMINISTRADOR
 wsl --install
 # reiniciar Windows, abrir Docker Desktop una vez y aceptar sus términos
-docker version          # debe mostrar "Server: Docker Desktop"
+docker version          # debe mostrar el cliente y el motor (Server)
 ```
 
-Luego, para que eslabon use GuardDog dentro de Docker:
+Verificado en F4: `wsl --status` → versión 2, y Docker Engine 29.8.0 (linux/amd64).
+
+Luego, para que eslabon use GuardDog dentro de Docker, **fijando la imagen por digest**:
 
 ```powershell
 docker pull ghcr.io/datadog/guarddog:v3.2.0
-$env:ESLABON_GUARDDOG = "docker run --rm ghcr.io/datadog/guarddog:v3.2.0"
-docker run --rm ghcr.io/datadog/guarddog:v3.2.0 --help
+docker image inspect ghcr.io/datadog/guarddog:v3.2.0 --format "{{json .RepoDigests}}"
+# -> ghcr.io/datadog/guarddog@sha256:5b0804d480e83405120fc90c62b60ad844310418c836e567055b1ba8843e033d
+$env:ESLABON_GUARDDOG = "docker run --rm ghcr.io/datadog/guarddog:v3.2.0@sha256:5b0804d480e83405120fc90c62b60ad844310418c836e567055b1ba8843e033d"
 ```
 
-> ⚠️ **Fijá la versión `:v3.2.0`.** En el registro de imágenes de GuardDog, la etiqueta `:latest`
-> apunta todavía a la **2.x** (su workflow de publicación solo mueve `latest` con tags `v2.*`). Usar
-> `latest` sería justo el error de supply chain que eslabon quiere detectar: no fijar versiones.
->
-> Sin confirmar: que la sandbox de GuardDog funcione dentro de Docker Desktop sobre WSL2. Si falla
-> con *"Kernel-level sandbox is not available"*, el colector lo informa en `fuentes_omitidas`, y la
-> decisión de usar `--no-sandbox` es del usuario (no se toma automáticamente).
+> ⚠️ **Por qué el digest y no solo `:v3.2.0`.** Una etiqueta es un puntero que el dueño del registro
+> puede mover. El digest es el hash SHA256 del contenido: si alguien reemplazara la imagen, Docker se
+> negaría a usarla. Además, la etiqueta `:latest` de GuardDog apunta todavía a la **2.x**. Usar
+> `latest` sería justo el error de supply chain que eslabon quiere detectar.
+
+**Verificado en F4:**
+- `docker run --rm ghcr.io/datadog/guarddog:v3.2.0 --version` → `3.2.0`.
+- **La sandbox funciona dentro de Docker Desktop sobre WSL2**, que era la duda de F0.
+- Escaneos reales sobre `requests==2.32.3` y `lodash@4.17.21`, dos paquetes legítimos. Solo
+  aparecen capacidades, así que no hay hallazgo.
+- Sobre las muestras de test **oficiales** de GuardDog, montadas en solo lectura: `high_risk`, 8,8
+  sobre 10.
+- Las dos salidas reales están grabadas en `tests/fixtures/grabaciones/guarddog_real_*.json`.
+- Si un análisis supera el tiempo límite, eslabon hace `docker kill` del contenedor, que lleva un
+  nombre único `eslabon-guarddog-…`, para que no quede corriendo.
+
+> Nota para pruebas manuales desde **Git Bash**: MSYS convierte los argumentos que parecen rutas
+> (`/muestra` → `C:/Program Files/Git/muestra`). Usar `MSYS_NO_PATHCONV=1`. eslabon no pasa por Git
+> Bash, así que no le afecta.
 
 El colector de GuardDog acepta cualquier comando por `ESLABON_GUARDDOG` (el binario nativo o
 `docker run ...`), así que también funcionaría con la opción B.
@@ -213,12 +228,49 @@ token, el análisis semanal de Scorecard que publica deps.dev. Si en el futuro s
 `scorecard_checksums.txt`) y se define `GITHUB_TOKEN` **en el entorno**, eslabon lo usará
 automáticamente. El token nunca se pasa como argumento ni se escribe en ningún fichero.
 
+## 4c. Dependencias de eslabon, con hashes (F4)
+
+Las dependencias propias están fijadas con **versión exacta y hash SHA256** de cada fichero publicado,
+generadas con pip-tools desde `pyproject.toml`:
+
+| Fichero | Contenido |
+|---|---|
+| `requirements.txt` | 13 dependencias de ejecución, 144 hashes |
+| `requirements-dev.txt` | Ejecución más desarrollo (incluidos pip-tools, y pip y setuptools fijados): 44 paquetes |
+
+Instalación reproducible y verificada (pip rechaza cualquier fichero cuyo hash no coincida):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python -m pip install --require-hashes --no-deps -r requirements-dev.txt
+.venv\Scripts\python -m pip install --no-deps -e .
+```
+
+Regenerarlas (tras cambiar dependencias en `pyproject.toml`):
+
+```powershell
+.venv\Scripts\pip-compile --generate-hashes --strip-extras --no-emit-index-url -o requirements.txt pyproject.toml
+.venv\Scripts\pip-compile --generate-hashes --strip-extras --no-emit-index-url --extra dev -o requirements-dev.txt pyproject.toml
+```
+
+Probado en F4:
+- **Un venv nuevo se instala con `--require-hashes`**, y `pip check` no reporta problemas.
+- **Con un lockfile manipulado** (los hashes de `rich` alterados), pip se niega a instalar:
+  *"THESE PACKAGES DO NOT MATCH THE HASHES… someone may have tampered with them"*.
+
+Límites:
+- El lock se generó en Windows. Las dependencias que dependen de la plataforma (p. ej. `colorama`,
+  que typer solo usa en Windows) pueden diferir en Linux. Para CI en Linux, regenerar ahí.
+- `hatchling` (la herramienta que construye eslabon) no está fijada con hash. Se descarga al instalar
+  eslabon en modo editable.
+
 ## 5. Comprobación final
 
 ```powershell
 # (en una terminal NUEVA, para que tome el PATH)
 syft version
 osv-scanner --version
+docker run --rm ghcr.io/datadog/guarddog:v3.2.0 --version
 ```
 
-Ambos responden. `guarddog --help` queda **pendiente** hasta que se elija la opción A o B.
+Los tres responden (F4).

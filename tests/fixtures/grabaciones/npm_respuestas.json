@@ -1,0 +1,100 @@
+{
+ "/event-stream/3.3.4": {
+  "name": "event-stream",
+  "version": "3.3.4",
+  "_npmUser": {
+   "name": "dominictarr"
+  },
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  },
+  "maintainers": [
+   {
+    "name": "dominictarr"
+   }
+  ]
+ },
+ "/event-stream/3.3.5": {
+  "name": "event-stream",
+  "version": "3.3.5",
+  "_npmUser": {
+   "name": "right9ctrl"
+  },
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  },
+  "maintainers": [
+   {
+    "name": "dominictarr"
+   },
+   {
+    "name": "right9ctrl"
+   }
+  ]
+ },
+ "/event-stream/4.0.0": {
+  "name": "event-stream",
+  "version": "4.0.0",
+  "_npmUser": {
+   "name": "right9ctrl"
+  },
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  },
+  "maintainers": [
+   {
+    "name": "right9ctrl"
+   }
+  ]
+ },
+ "/event-stream/3.3.6": null,
+ "/flatmap-stream/0.1.1": null,
+ "/lodash/4.17.20": {
+  "name": "lodash",
+  "version": "4.17.20",
+  "_npmUser": {
+   "name": "bnjmnt4n"
+  },
+  "scripts": {
+   "test": "echo \"See https://travis-ci.org/lodash-archive/lodash-cli for testing details.\""
+  },
+  "maintainers": [
+   {
+    "name": "bnjmnt4n"
+   },
+   {
+    "name": "jdalton"
+   },
+   {
+    "name": "mathias"
+   }
+  ]
+ },
+ "/lodash/4.17.21": {
+  "name": "lodash",
+  "version": "4.17.21",
+  "_npmUser": {
+   "name": "bnjmnt4n"
+  },
+  "scripts": {
+   "test": "echo \"See https://travis-ci.org/lodash-archive/lodash-cli for testing details.\""
+  },
+  "maintainers": [
+   {
+    "name": "mathias"
+   },
+   {
+    "name": "jdalton"
+   },
+   {
+    "name": "bnjmnt4n"
+   }
+  ]
+ }
+}

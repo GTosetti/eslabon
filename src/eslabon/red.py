@@ -12,8 +12,11 @@ Defensas:
 from __future__ import annotations
 
 import json
+import threading
 import urllib.error
 import urllib.request
+from collections.abc import Callable
+from concurrent.futures import Future
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -58,3 +61,38 @@ def obtener_json(url: str, timeout: float) -> Any | None:
         return json.loads(cuerpo)
     except json.JSONDecodeError as exc:
         raise ErrorRed(f"{url}: JSON inválido: {exc}") from exc
+
+
+# Función que hace el GET: (ruta relativa a la base, timeout) -> JSON o None si 404.
+# Los tests la sustituyen por respuestas grabadas.
+Obtener = Callable[[str, float], Any | None]
+
+
+class ClienteCacheado:
+    """Cliente JSON de una API pública, con caché compartida entre colectores.
+
+    En la caché se guarda un Future por ruta: si dos colectores piden lo mismo a la vez,
+    el segundo espera la respuesta del primero en vez de repetir la petición. Un error
+    también queda guardado, para no reintentarlo una vez por colector.
+    """
+
+    BASE = ""
+
+    def __init__(self, obtener: Obtener | None = None, timeout: float = 30) -> None:
+        self._obtener = obtener or (lambda ruta, t: obtener_json(self.BASE + ruta, t))
+        self._timeout = timeout
+        self._cache: dict[str, Future] = {}
+        self._cerrojo = threading.Lock()
+
+    def _get(self, ruta: str) -> Any | None:
+        with self._cerrojo:
+            futuro = self._cache.get(ruta)
+            propio = futuro is None
+            if propio:
+                futuro = self._cache[ruta] = Future()
+        if propio:
+            try:
+                futuro.set_result(self._obtener(ruta, self._timeout))
+            except Exception as exc:  # noqa: BLE001 - se entrega a quien espere la ruta
+                futuro.set_exception(exc)
+        return futuro.result()

@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import ClassVar, TypeVar
 
 from eslabon.api_depsdev import ClienteDepsDev
+from eslabon.api_npm import ClienteNpm
 from eslabon.ejecutor import HerramientaNoDisponible
 from eslabon.modelos import Finding, Paquete
 
@@ -30,6 +31,7 @@ class Contexto:
     timeout: float  # segundos máximos por herramienta
     # Compartido entre colectores: guarda en memoria las respuestas de deps.dev.
     depsdev: ClienteDepsDev = field(default_factory=ClienteDepsDev)
+    npm: ClienteNpm = field(default_factory=ClienteNpm)
     # "Ahora", fijo para todo el escaneo (y reemplazable en los tests).
     ahora: datetime = field(default_factory=lambda: datetime.now(UTC))
 

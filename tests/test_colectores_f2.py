@@ -21,6 +21,7 @@ from eslabon.ejecutor import HerramientaFallo, HerramientaNoDisponible
 from eslabon.modelos import Tipo
 from eslabon.red import ErrorRed
 from eslabon.sbom import paquete_desde_texto
+from eslabon.senales import hallazgo_de_senales
 
 
 def _senales(hallazgo):
@@ -189,3 +190,24 @@ def test_guarddog_ausente_se_dice_claro(ctx, monkeypatch):
     monkeypatch.setenv("PATH", "")
     with pytest.raises(HerramientaNoDisponible, match="guarddog no está en el PATH"):
         ColectorGuardDog().recolectar([paquete_desde_texto("npm:a@1.0.0")], ctx)
+
+
+# --- Salidas REALES de GuardDog v3.2.0 (F4) ------------------------------------------------
+def test_guarddog_real_paquete_legitimo_no_genera_hallazgo(ctx, monkeypatch,
+                                                         guarddog_real_requests):
+    real = guarddog_real_requests
+    assert real["risk_score"]["label"] == "no_risks_detected"
+    # Solo capacidades: contexto, no hallazgo.
+    assert {e.senal for e in evidencias_de_guarddog(real)} == {"guarddog-capacidad"}
+    monkeypatch.setattr("eslabon.colectores.guarddog.ejecutar_json", lambda *a, **k: real)
+    assert ColectorGuardDog().recolectar([paquete_desde_texto("pypi:requests@2.32.3")], ctx) == []
+
+
+def test_guarddog_real_muestras_oficiales_de_amenaza(guarddog_real_muestra):
+    real = guarddog_real_muestra
+    senales = [e.senal for e in evidencias_de_guarddog(real)]
+    assert "guarddog-veredicto-high_risk" in senales
+    assert senales.count("guarddog-amenaza-alta") == 3  # exfiltración + 2 reglas de setup.py
+    [h] = [hallazgo_de_senales(paquete_desde_texto("pypi:muestra@1.0"),
+                               evidencias_de_guarddog(real))]
+    assert h.tipo is Tipo.SOSPECHOSO

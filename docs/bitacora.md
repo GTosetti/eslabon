@@ -163,3 +163,68 @@
 - SARIF: reglas, resultados, `partialFingerprints` estables y `security-severity`.
 - Fallar en cerrado: en seguridad, "no pude mirar" nunca debe verse igual que "miré y está limpio".
 - Nunca confiar en datos del objetivo analizado: nombres, rutas y texto pueden ser un ataque.
+
+## F4: Integración real (2026-09-27)
+
+**Qué se hizo**
+- **GuardDog real.** El usuario instaló WSL2. Docker Engine 29.8.0 funciona, y la imagen
+  `ghcr.io/datadog/guarddog:v3.2.0` se fijó **por digest** (`sha256:5b0804d4…`). La sandbox
+  funciona dentro de Docker. Grabaciones reales:
+  - `requests` y `lodash`, paquetes legítimos: solo capacidades;
+  - las **muestras de test oficiales** de GuardDog, montadas en solo lectura: `high_risk` 8,8.
+- **Ruido corregido.** Las capacidades solas ya no generan hallazgo: son señales de "contexto",
+  marcadas así en el catálogo.
+- **`docker kill` al vencer el timeout.** El contenedor lleva un nombre único (o el `--name` del
+  usuario). Funciona también con `docker --context x run` y `docker container run`.
+- **Colector del registro de npm** (`registry.npmjs.org`, autorizado por el usuario):
+  - publicador nuevo, comparando por cuenta y no por correo, y sin contar el paso a trusted
+    publishing de CI;
+  - script de instalación que descarga o ejecuta código.
+
+  La "versión anterior" se calcula por semver, no por fecha, por los backports y las fechas
+  empatadas.
+- **Lockfiles con hashes** con pip-tools: `requirements.txt` (13 paquetes) y
+  `requirements-dev.txt` (44, con pip y setuptools fijados).
+- **Auditoría completa de Trail of Bits** (`api.scorecard.dev` autorizada): coincide con eslabon.
+  Las dependencias de ejecución están limpias.
+- Revisiones: `code-review` (6 problemas) y calidad (7). Todo aplicado, salvo lo indicado abajo.
+
+**Qué demostró (condiciones de salida)**
+- `docker run … guarddog --version` → 3.2.0. `eslabon scan` con **las cinco fuentes activas** y
+  ninguna omitida. `docker ps` sin contenedores huérfanos.
+- **Caso real sin avisos: `event-stream@3.3.5`**, la primera versión del atacante:
+  - sospechoso, media, confianza 0,561;
+  - reactivación tras 779 días (deps.dev) + publicador `right9ctrl` en lugar de `dominictarr`
+    (npm) + repositorio archivado (Scorecard);
+  - verificado con respuestas grabadas y en vivo.
+- **Lockfile:**
+  - la instalación con `--require-hashes` en un venv nuevo funciona;
+  - con los hashes de `rich` alterados, pip **se niega** a instalar ("someone may have tampered
+    with them").
+- `pytest`: **181 tests pasan**. `ruff` limpio.
+
+**Qué falló o quedó pendiente**
+- ⚠️ **Incidente: uso del token de gh.** El recolector de Trail of Bits obtiene un token con
+  `gh auth token`. Quité `gh` del PATH, pero hay **una segunda instalación de gh** y el recolector
+  usó el token de la sesión del usuario para consultas de **lectura** a GitHub. Contradice la
+  regla 3.
+  - Se verificó que el token no quedó en ningún fichero, ni en la caché, ni en el repositorio.
+  - Se informó al usuario y quedó registrado en la memoria del proyecto: la próxima vez,
+    `GH_CONFIG_DIR` vacío y comprobar `gh auth status`.
+  - La caché del recolector quedó en `%TEMP%\supply-chain-risk-auditor-cache`, fuera del proyecto.
+    No se borró sin permiso.
+- No aplicado de la revisión de calidad:
+  - agrupar los clientes (deps.dev y npm) en una sola estructura, en lugar de un parámetro por
+    cliente en `escanear`: hoy son dos;
+  - unificar la "versión anterior" de deps.dev (reactivación, por **fecha**, porque mide la
+    inactividad del paquete) con la de npm (por **semver**, porque compara la misma línea de
+    versiones). Son preguntas distintas, y quedan documentadas.
+- El patrón exacto del encargo (publicador nuevo + script con red + versión reciente), junto con
+  GuardDog, da 0,792 → **media**. Las dos señales de npm son de la misma fuente. Subir los pesos a
+  mano sería trampa: hay que calibrarlos con datos.
+- Pendientes de antes: validar Wazuh en el laboratorio, `insecure-defaults` y `--srcroot`.
+
+**Conceptos clave**
+- Fijar por digest frente a fijar por etiqueta: una etiqueta se puede mover; un hash, no.
+- `--require-hashes`: el lockfile no solo fija versiones, también verifica el contenido.
+- Un compromiso sin CVE solo se ve correlacionando: quién publicó, cuándo y dónde vive el código.

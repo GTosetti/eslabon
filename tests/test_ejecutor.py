@@ -108,3 +108,52 @@ def test_redactar_tokens(monkeypatch):
     limpio = redactar(texto)
     assert "valor-muy-secreto" not in limpio
     assert "ghp_" not in limpio and "github_pat_" not in limpio and "abc" not in limpio
+
+
+def test_contenedor_docker_con_nombre_y_kill_al_vencer_el_timeout(monkeypatch, tmp_path):
+    # Un "docker" falso (Python) que tarda más que el timeout: el ejecutor debe darle un nombre
+    # al contenedor y, al vencer el tiempo, llamar a `docker kill <nombre>`.
+    llamadas = []
+    real_run = __import__("subprocess").run
+
+    def run_espia(comando, **kw):
+        llamadas.append(comando)
+        if comando[1] == "kill":
+            return None
+        return real_run([sys.executable, "-c", "import time; time.sleep(5)"], **kw)
+
+    monkeypatch.setattr("eslabon.ejecutor.subprocess.run", run_espia)
+    docker = tmp_path / "docker.exe"
+    docker.write_text("x", encoding="utf-8")
+    monkeypatch.setenv("ESLABON_TEST_FANTASMA", f'"{docker}" run --rm imagen:1.0')
+    with pytest.raises(HerramientaFallo, match="tiempo límite"):
+        ejecutar(INEXISTENTE, ["scan"], timeout=0.5)
+    lanzado, matado = llamadas
+    assert lanzado[:3] == [str(docker), "run", "--name"]
+    nombre = lanzado[3]
+    assert nombre.startswith("eslabon-fantasma-") and lanzado[4:] == ["--rm", "imagen:1.0", "scan"]
+    assert matado == [str(docker), "kill", nombre]
+
+
+@pytest.mark.parametrize(("comando", "esperado_prefijo", "nombre_fijo"), [
+    (["/x/docker", "--context", "lab", "run", "--rm", "img"],
+     ["/x/docker", "--context", "lab", "run", "--name"], None),
+    (["/x/docker", "container", "run", "img"], ["/x/docker", "container", "run", "--name"], None),
+    (["/x/docker", "run", "--name", "mio", "img"], ["/x/docker", "run", "--name", "mio"], "mio"),
+    (["/x/docker", "run", "--name=mio", "img"], ["/x/docker", "run", "--name=mio"], "mio"),
+])
+def test_nombre_del_contenedor(comando, esperado_prefijo, nombre_fijo):
+    from eslabon.ejecutor import _nombrar_contenedor
+
+    resultado, nombre = _nombrar_contenedor(comando, INEXISTENTE)
+    assert resultado[:len(esperado_prefijo)] == esperado_prefijo
+    if nombre_fijo:
+        assert nombre == nombre_fijo and resultado == comando  # no se agrega un segundo --name
+    else:
+        assert nombre.startswith("eslabon-fantasma-") and nombre in resultado
+
+
+def test_herramienta_sin_docker_no_se_toca():
+    from eslabon.ejecutor import _nombrar_contenedor
+
+    assert _nombrar_contenedor(["/x/syft", "run"], INEXISTENTE) == (["/x/syft", "run"], None)

@@ -19,6 +19,9 @@ class Senal:
     tipo: Tipo
     peso: float
     descripcion: str
+    # Contexto: describe al paquete pero no indica compromiso por sí sola (p. ej. "puede abrir
+    # conexiones"). Acompaña a otras señales, pero sola no genera hallazgo.
+    contexto: bool = False
 
 
 _M, _S, _O, _V = Tipo.MALICIOSO, Tipo.SOSPECHOSO, Tipo.RIESGO_ORIGEN, Tipo.VULN
@@ -41,6 +44,13 @@ CATALOGO: dict[str, Senal] = {s.clave: s for s in [
     Senal("depsdev-reactivacion", _S, 0.25,
           "Versión publicada tras más de un año sin publicaciones del paquete"),
     Senal("depsdev-obsoleto", _O, 0.10, "El registro marca la versión como obsoleta (deprecated)"),
+    # --- Registro de npm: quién publicó y qué se ejecuta al instalar ---
+    Senal("npm-publicador-nuevo", _S, 0.35,
+          "La versión la publicó una cuenta distinta de la que publicó la anterior"),
+    Senal("npm-script-instalacion", _S, 0.05, contexto=True, descripcion=
+          "Tiene script de instalación (se ejecuta al instalar): contexto, no amenaza"),
+    Senal("npm-script-instalacion-red", _S, 0.35,
+          "El script de instalación descarga o ejecuta código (curl, wget, URL, node -e...)"),
     # --- OpenSSF Scorecard: salud del repositorio de origen ---
     Senal("scorecard-dangerous-workflow", _O, 0.30,
           "Workflow de CI con patrón peligroso (inyección de scripts o checkout no confiable)"),
@@ -67,7 +77,7 @@ CATALOGO: dict[str, Senal] = {s.clave: s for s in [
     Senal("guarddog-amenaza-alta", _S, 0.60, "Regla de amenaza de severidad alta"),
     Senal("guarddog-amenaza-media", _S, 0.40, "Regla de amenaza de severidad media"),
     Senal("guarddog-amenaza-baja", _S, 0.20, "Regla de amenaza de severidad baja"),
-    Senal("guarddog-capacidad", _S, 0.05,
+    Senal("guarddog-capacidad", _S, 0.05, contexto=True, descripcion=
           "Capacidad (red, procesos, ficheros): contexto, no amenaza"),
     # --- GuardDog: veredicto global de la herramienta ---
     Senal("guarddog-veredicto-high_risk", _S, 0.70,
@@ -98,6 +108,13 @@ PRECEDENCIA = (Tipo.MALICIOSO, Tipo.SOSPECHOSO, Tipo.RIESGO_ORIGEN, Tipo.VULN)
 
 def tipo_dominante(tipos: list[Tipo]) -> Tipo:
     return min(tipos, key=PRECEDENCIA.index)
+
+
+def hallazgo_si_hay_senal(paquete: Paquete, evidencias: list[Evidencia]) -> Finding | None:
+    """Hallazgo con esas evidencias, o None si no hay ninguna o si TODAS son de contexto."""
+    if all(e.senal in CATALOGO and CATALOGO[e.senal].contexto for e in evidencias):
+        return None
+    return hallazgo_de_senales(paquete, evidencias)
 
 
 def hallazgo_de_senales(paquete: Paquete, evidencias: list[Evidencia]) -> Finding:

@@ -46,22 +46,46 @@ def depsdev_grabado():
     """Cliente de deps.dev que responde con respuestas reales grabadas, sin red."""
     from eslabon.api_depsdev import ClienteDepsDev
 
-    respuestas = cargar("depsdev_respuestas.json")
+    return _cliente_grabado(ClienteDepsDev, "depsdev_respuestas.json")
+
+
+def _cliente_grabado(clase, fichero):
+    respuestas = cargar(fichero)
 
     def obtener(ruta, timeout):
         if ruta not in respuestas:
             raise AssertionError(f"respuesta no grabada: {ruta}")
         return respuestas[ruta]
 
-    return ClienteDepsDev(obtener=obtener)
+    return clase(obtener=obtener)
 
 
 @pytest.fixture
-def ctx(tmp_path, depsdev_grabado):
-    """Contexto de colector con deps.dev grabado y un "ahora" fijo."""
+def npm_grabado():
+    """Cliente del registro de npm con respuestas reales grabadas (sin correos), sin red."""
+    from eslabon.api_npm import ClienteNpm
+
+    return _cliente_grabado(ClienteNpm, "npm_respuestas.json")
+
+
+@pytest.fixture
+def ctx(tmp_path, depsdev_grabado, npm_grabado):
+    """Contexto de colector con deps.dev y npm grabados y un "ahora" fijo."""
     from datetime import UTC, datetime
 
     from eslabon.colectores import Contexto
 
     return Contexto(dir_trabajo=tmp_path, timeout=30, depsdev=depsdev_grabado,
-                    ahora=datetime(2026, 9, 26, tzinfo=UTC))
+                    npm=npm_grabado, ahora=datetime(2026, 9, 26, tzinfo=UTC))
+
+
+@pytest.fixture
+def guarddog_real_requests() -> dict:
+    """Salida REAL de guarddog v3.2.0 sobre requests==2.32.3 (paquete legítimo)."""
+    return cargar("guarddog_real_requests.json")
+
+
+@pytest.fixture
+def guarddog_real_muestra() -> dict:
+    """Salida REAL de guarddog v3.2.0 sobre sus propias muestras de test de amenazas."""
+    return cargar("guarddog_real_muestra.json")

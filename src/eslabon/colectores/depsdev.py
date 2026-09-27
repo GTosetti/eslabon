@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 
 from eslabon.colectores.base import Colector, Contexto, en_paralelo, entregar
 from eslabon.modelos import Finding, Paquete, es_tapon_seguridad
-from eslabon.senales import evidencia, hallazgo_de_senales
+from eslabon.senales import evidencia, hallazgo_de_senales, hallazgo_si_hay_senal
 
 # Umbrales (justificados en docs/scoring.md).
 DIAS_VERSION_RECIENTE = 14
@@ -75,7 +75,7 @@ def analizar_paquete(p: Paquete, ctx: Contexto) -> Finding | None:
                                     detalle.get("deprecatedReason") or "sin motivo indicado",
                                     referencia=url))
 
-    return hallazgo_de_senales(p, evidencias) if evidencias else None
+    return hallazgo_si_hay_senal(p, evidencias)
 
 
 def _fecha(texto: str | None) -> datetime | None:

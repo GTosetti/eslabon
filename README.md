@@ -14,17 +14,21 @@ It does not try to replace Trivy or Grype. What it adds:
 2. **Explainability.** Every finding states why it was raised, with evidence from each source.
 3. **SOC-native output.** JSON events for a Wazuh agent, plus a Wazuh decoder/rules and Sigma rules.
 
-> **Status: early development (phases F0–F3 done).** All five sources are wired in. GuardDog has
-> only been exercised with synthetic output so far, and the Wazuh rules are **not yet validated
-> against a real manager**. See [`docs/bitacora.md`](docs/bitacora.md) and
-> [`docs/scoring.md`](docs/scoring.md).
+> **Status: early development (phases F0–F4 done).** All sources run for real, GuardDog included
+> (via Docker, image pinned by digest). The Wazuh rules are **not yet validated against a real
+> manager**. See [`docs/bitacora.md`](docs/bitacora.md) and [`docs/scoring.md`](docs/scoring.md).
+>
+> Real-world example: `eslabon scan npm:event-stream@3.3.5`. That is the first release published
+> by the attacker in the 2018 event-stream incident, and it has **no advisory at all**. eslabon flags
+> it as *suspicious* by correlating a new publisher on npm, a release after 779 days of inactivity
+> and an archived upstream repo.
 
 ## How it works
 
 ```
 input (directory / lockfile / ecosystem:package@version)
   → Syft (SBOM)
-  → collectors: osv, guarddog, scorecard, depsdev   (one module each, same interface)
+  → collectors: osv, depsdev, npm registry, scorecard, guarddog   (same interface)
   → normalizer  → common Finding schema
   → correlator  → alias dedup (GHSA/CVE/MAL/PYSEC) + explainable score
   → outputs     → console table | JSON | SARIF 2.1.0 | SIEM JSON events
@@ -47,7 +51,9 @@ Installation steps, with checksum verification, are in [`docs/instalacion.md`](d
 
 ```bash
 python -m venv .venv
-.venv/Scripts/python -m pip install -e ".[dev]"     # Windows; use .venv/bin on Linux/macOS
+# Hash-pinned install (pip refuses any file whose SHA256 doesn't match the lockfile):
+.venv/Scripts/python -m pip install --require-hashes --no-deps -r requirements-dev.txt
+.venv/Scripts/python -m pip install --no-deps -e .   # Windows; use .venv/bin on Linux/macOS
 
 eslabon scan path/to/project              # directory: Syft builds the SBOM
 eslabon scan path/to/package-lock.json    # a single lockfile

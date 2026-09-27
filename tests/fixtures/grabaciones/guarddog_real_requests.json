@@ -1,0 +1,106 @@
+{
+ "_nota": "REAL: guarddog v3.2.0 (imagen ghcr.io/datadog/guarddog@sha256:5b0804d4...033d) sobre requests==2.32.3, paquete legítimo.",
+ "package": "requests",
+ "issues": 3,
+ "errors": {},
+ "results": {
+  "metadata_mismatch": null,
+  "repository_integrity_mismatch": null,
+  "deceptive_author": null,
+  "bundled_binary": null,
+  "unclaimed_maintainer_email_domain": null,
+  "typosquatting": null,
+  "potentially_compromised_email_domain": null,
+  "capability-filesystem-browser": {},
+  "capability-filesystem-delete": [
+   {
+    "location": "requests/utils.py:314",
+    "code": "    except BaseException:\n        os.remove(tmp_name)\n        raise",
+    "match": "os.remove(",
+    "message": "Detects file/directory deletion capabilities"
+   }
+  ],
+  "capability-filesystem-read": [
+   {
+    "location": "requests/models.py:191",
+    "code": "            elif hasattr(fp, \"read\"):\n                fdata = fp.read()\n            elif fp is None:\n                continue",
+    "match": ".read(",
+    "message": "Detects filesystem read capabilities"
+   }
+  ],
+  "capability-filesystem-write-executable": {},
+  "capability-network-download": {},
+  "capability-network-lolbas": {},
+  "capability-network-outbound": {},
+  "capability-process-hooks": {},
+  "capability-process-schedule": {},
+  "capability-process-spawn": [
+   {
+    "location": "requests/help.py:73",
+    "code": "        platform_info = {\n            \"system\": platform.system(),\n            \"release\": platform.release(),\n        }",
+    "match": "system(",
+    "message": "Detects process execution and spawning"
+   }
+  ],
+  "capability-runtime-clipboard": {},
+  "threat-filesystem-autostart": {},
+  "threat-filesystem-destruction": {},
+  "threat-filesystem-read": {},
+  "threat-network-dns-exfil": {},
+  "threat-network-exfil-messenger": {},
+  "threat-network-exfil-sysinfo": {},
+  "threat-network-exfiltration": {},
+  "threat-network-outbound-shady-links": {},
+  "threat-network-reverse-shell": {},
+  "threat-npm-dependency-confusion": {},
+  "threat-npm-http-dependency": {},
+  "threat-npm-preinstall-script": {},
+  "threat-process-cryptomining": {},
+  "threat-process-download-exec": {},
+  "threat-process-hooks": {},
+  "threat-process-injection-dll": {},
+  "threat-process-memory": {},
+  "threat-process-powershell-encoded": {},
+  "threat-process-spawn-silent": {},
+  "threat-process-sysinfo": {},
+  "threat-runtime-dynamic-loader": {},
+  "threat-runtime-enumeration": {},
+  "threat-runtime-environment-read": {},
+  "threat-runtime-keylogging": {},
+  "threat-runtime-obfuscation": {},
+  "threat-runtime-obfuscation-api": {},
+  "threat-runtime-obfuscation-base64exec": {},
+  "threat-runtime-obfuscation-chr": {},
+  "threat-runtime-obfuscation-dynamic-eval": {},
+  "threat-runtime-obfuscation-general": {},
+  "threat-runtime-obfuscation-hidden-code": {},
+  "threat-runtime-obfuscation-import-exec": {},
+  "threat-runtime-obfuscation-js-mangling": {},
+  "threat-runtime-obfuscation-log-suppress": {},
+  "threat-runtime-obfuscation-pyarmor": {},
+  "threat-runtime-obfuscation-steganography": {},
+  "threat-runtime-obfuscation-unicode": {},
+  "threat-runtime-screencapture": {},
+  "threat-runtime-self-propagation": {},
+  "threat-runtime-system-info": {},
+  "threat-setup-import-aliasing": {},
+  "threat-setup-network-in-install": {},
+  "threat-setup-suspicious-imports": {}
+ },
+ "path": "<RUTA_TEMPORAL>",
+ "risk_score": {
+  "score": 0.0,
+  "label": "no_risks_detected",
+  "findings_count": 3,
+  "score_breakdown": {
+   "severity_component": 0.0,
+   "chain_component": 0.0,
+   "specificity_component": 0.0,
+   "sophistication_component": 0.0
+  }
+ },
+ "risks": [],
+ "package_version": "2.32.3",
+ "pypi_inspector_url": "https://inspector.pypi.io/project/requests/2.32.3/",
+ "pypi_dist_path": "<RUTA_TEMPORAL>"
+}

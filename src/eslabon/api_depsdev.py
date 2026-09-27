@@ -1,53 +1,34 @@
 """Cliente de la API pública de deps.dev (https://docs.deps.dev/api/v3/).
 
-Lo comparten varios colectores (deps.dev y Scorecard), así que guarda en memoria
-cada respuesta: dos colectores que preguntan lo mismo generan una sola petición.
+Lo comparten varios colectores (deps.dev, Scorecard y el del registro de npm), así que
+guarda en memoria cada respuesta (ver ClienteCacheado en red.py).
 """
 
 from __future__ import annotations
 
-import threading
-from collections.abc import Callable
-from concurrent.futures import Future
-from typing import Any
+import re
 from urllib.parse import quote
 
 from eslabon.modelos import Paquete, es_tapon_seguridad
-from eslabon.red import obtener_json
+from eslabon.red import ClienteCacheado
 
-BASE = "https://api.deps.dev/v3"
-
-# Función que hace el GET: (ruta relativa a BASE, timeout) -> JSON o None si 404.
-# Los tests la sustituyen por respuestas grabadas.
-Obtener = Callable[[str, float], Any | None]
+_SEMVER = re.compile(r"v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?")
 
 
-def _obtener_de_internet(ruta: str, timeout: float) -> Any | None:
-    return obtener_json(BASE + ruta, timeout)
+def clave_semver(version: str) -> tuple[int, int, int, bool] | None:
+    """(mayor, menor, parche, es_estable) para ordenar versiones semver; None si no lo es.
+
+    Una pre-versión (1.0.0-beta) va antes que la estable (1.0.0): por eso es_estable ordena
+    False < True.
+    """
+    m = _SEMVER.fullmatch(version)
+    if not m:
+        return None
+    return int(m[1][:18]), int(m[2][:18]), int(m[3][:18]), m[4] is None
 
 
-class ClienteDepsDev:
-    def __init__(self, obtener: Obtener = _obtener_de_internet, timeout: float = 30) -> None:
-        self._obtener = obtener
-        self._timeout = timeout
-        self._cache: dict[str, Future] = {}
-        self._cerrojo = threading.Lock()
-
-    def _get(self, ruta: str) -> Any | None:
-        # En la caché se guarda un Future por ruta: si dos colectores piden lo mismo a la
-        # vez, el segundo espera la respuesta del primero en vez de repetir la petición.
-        # Un error también queda guardado, para no reintentarlo una vez por colector.
-        with self._cerrojo:
-            futuro = self._cache.get(ruta)
-            propio = futuro is None
-            if propio:
-                futuro = self._cache[ruta] = Future()
-        if propio:
-            try:
-                futuro.set_result(self._obtener(ruta, self._timeout))
-            except Exception as exc:  # noqa: BLE001 - se entrega a quien espere la ruta
-                futuro.set_exception(exc)
-        return futuro.result()
+class ClienteDepsDev(ClienteCacheado):
+    BASE = "https://api.deps.dev/v3"
 
     @staticmethod
     def _ruta_paquete(p: Paquete) -> str:
@@ -65,6 +46,25 @@ class ClienteDepsDev:
     def proyecto(self, id_proyecto: str) -> dict | None:
         """Datos del repositorio de origen, incluido su OpenSSF Scorecard."""
         return self._get(f"/projects/{quote(id_proyecto, safe='')}")
+
+    def version_anterior(self, p: Paquete) -> str | None:
+        """La versión estable inmediatamente inferior en NÚMERO de versión (semver).
+
+        No se usa la fecha: un paquete con varias ramas publica backports (3.10.2) después
+        de versiones de otra rama (4.x), y compararlas daría "publicador nuevo" sin cambio
+        de dueño. Tampoco sirven las fechas de deps.dev para versiones antiguas: muchas
+        comparten la misma fecha de importación. Se ignoran los tapones "-security" y las
+        pre-versiones (1.0.0-beta). Devuelve None si esta versión no figura en el registro.
+        """
+        esta = clave_semver(p.version)
+        publicadas = {v["versionKey"]["version"]
+                      for v in (self.paquete(p) or {}).get("versions", [])}
+        if esta is None or p.version not in publicadas:
+            return None
+        previas = [(clave, v) for v in publicadas
+                   if not es_tapon_seguridad(p.ecosistema, v)
+                   and (clave := clave_semver(v)) is not None and clave[3] and clave < esta]
+        return max(previas)[1] if previas else None
 
     def repositorio_origen(self, p: Paquete) -> str | None:
         """Repositorio de código fuente del paquete, p. ej. "github.com/psf/requests".
