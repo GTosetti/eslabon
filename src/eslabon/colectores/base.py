@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import ClassVar, TypeVar
 
 from eslabon.api_depsdev import ClienteDepsDev
+from eslabon.ejecutor import HerramientaNoDisponible
 from eslabon.modelos import Finding, Paquete
 
 T = TypeVar("T")
@@ -47,6 +48,8 @@ class ColectorFallo(Exception):
 
 class Colector(ABC):
     nombre: ClassVar[str]
+    # Esencial: si falla, el análisis queda incompleto (ResultadoScan.completo = False).
+    esencial: ClassVar[bool] = False
 
     @abstractmethod
     def recolectar(self, paquetes: list[Paquete], ctx: Contexto) -> list[Finding]: ...
@@ -68,6 +71,8 @@ def en_paralelo(elementos: list[T], funcion: Callable[[T], R], hilos: int = HILO
     def seguro(x: T) -> tuple[R | None, str | None]:
         try:
             return funcion(x), None
+        except HerramientaNoDisponible:
+            raise  # no es un fallo de este elemento: la herramienta no existe para ninguno
         except Exception as exc:  # noqa: BLE001 - se informa como análisis parcial
             return None, f"{etiqueta(x)}: {type(exc).__name__}: {exc}"
 

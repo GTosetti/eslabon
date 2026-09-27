@@ -1,0 +1,33 @@
+title: Paquete malicioso en las dependencias (eslabon)
+id: 63f57a99-b6a8-4f5f-9f15-4145ffe548da
+status: experimental
+description: |
+    eslabon encontró una dependencia identificada como maliciosa por un aviso publicado
+    (OpenSSF Malicious Packages MAL-, GHSA con CWE-506) o por el propio registro (versión
+    tapón "-security" de npm). Quien instaló el paquete ejecutó código del atacante.
+references:
+    - https://attack.mitre.org/techniques/T1195/001/
+    - https://github.com/ossf/malicious-packages
+author: Guillermo Tosetti
+date: 2026-09-26
+tags:
+    - attack.initial-access
+    - attack.t1195.001
+logsource:
+    product: eslabon
+    service: supply_chain
+detection:
+    selection:
+        eslabon.evento: hallazgo
+        eslabon.tipo: malicioso
+    condition: selection
+fields:
+    - eslabon.paquete
+    - eslabon.paquete_version
+    - eslabon.ecosistema
+    - eslabon.id
+    - eslabon.fuentes
+    - eslabon.equipo
+falsepositives:
+    - Avisos retirados posteriormente por falso positivo (poco frecuente)
+level: critical

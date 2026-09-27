@@ -17,7 +17,7 @@ from eslabon.colectores import (
 from eslabon.colectores.depsdev import analizar_paquete
 from eslabon.colectores.guarddog import evidencias_de_guarddog
 from eslabon.colectores.scorecard import evidencias_de_checks
-from eslabon.ejecutor import HerramientaFallo
+from eslabon.ejecutor import HerramientaFallo, HerramientaNoDisponible
 from eslabon.modelos import Tipo
 from eslabon.red import ErrorRed
 from eslabon.sbom import paquete_desde_texto
@@ -125,7 +125,8 @@ class _Ejecutor:
         self.respuestas = respuestas
 
     def __call__(self, herramienta, args, **kw):
-        r = self.respuestas[args[2]]
+        assert args[-2] == "--"  # el nombre nunca puede leerse como opción
+        r = self.respuestas[args[-1]]
         if isinstance(r, Exception):
             raise r
         return r
@@ -181,3 +182,10 @@ def test_guarddog_max_negativo_se_rechaza():
         ColectorGuardDog(max_paquetes=-1)
     r = CliRunner().invoke(cli.app, ["scan", "npm:a@1.0.0", "--guarddog-max", "-1"])
     assert r.exit_code == 2
+
+
+def test_guarddog_ausente_se_dice_claro(ctx, monkeypatch):
+    monkeypatch.delenv("ESLABON_GUARDDOG", raising=False)
+    monkeypatch.setenv("PATH", "")
+    with pytest.raises(HerramientaNoDisponible, match="guarddog no está en el PATH"):
+        ColectorGuardDog().recolectar([paquete_desde_texto("npm:a@1.0.0")], ctx)

@@ -55,8 +55,10 @@ class ColectorGuardDog(Colector):
 
 
 def _analizar(p: Paquete, ctx: Contexto) -> Finding | None:
-    doc = ejecutar_json(GUARDDOG, [p.ecosistema.tipo_purl, "scan", p.nombre,
-                                   "--version", p.version, "--output-format", "json"],
+    # Las opciones van antes y el nombre del paquete después de "--": aunque un nombre
+    # empezara por "-", GuardDog (click) nunca lo leería como una opción.
+    doc = ejecutar_json(GUARDDOG, [p.ecosistema.tipo_purl, "scan", f"--version={p.version}",
+                                   "--output-format", "json", "--", p.nombre],
                         timeout=ctx.timeout, codigos_ok=_CODIGOS_OK)
     if not doc:
         raise HerramientaFallo("guarddog no devolvió JSON")

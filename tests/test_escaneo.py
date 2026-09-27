@@ -4,7 +4,7 @@ from eslabon import escaneo
 from eslabon.colectores import Colector
 from eslabon.ejecutor import HerramientaNoDisponible
 from eslabon.modelos import Ecosistema, Evidencia, Finding, Severidad, Tipo
-from eslabon.sbom import paquete_desde_texto
+from eslabon.sbom import Inventario, paquete_desde_texto
 
 
 class _ColectorRoto(Colector):
@@ -63,6 +63,28 @@ def test_paquete_suelto_no_usa_syft(monkeypatch):
 
 
 def test_sin_paquetes_los_colectores_no_cuentan_como_usados(monkeypatch, tmp_path):
-    monkeypatch.setattr(escaneo, "generar_sbom", lambda *a, **k: [])
+    monkeypatch.setattr(escaneo, "generar_sbom", lambda *a, **k: Inventario(paquetes=[]))
     resultado = escaneo.escanear(tmp_path, [_ColectorFijo([Severidad.ALTA])], timeout=30)
     assert resultado.fuentes_usadas == ["syft"]
+    # Un inventario vacío no es un resultado limpio: se informa y el análisis es incompleto.
+    assert "inventario vacío" in resultado.fuentes_omitidas[0].motivo
+    assert resultado.completo is False
+
+
+def test_si_syft_falla_el_analisis_es_incompleto(monkeypatch, tmp_path):
+    def falla(*a, **k):
+        raise HerramientaNoDisponible("syft no está en el PATH")
+
+    monkeypatch.setattr(escaneo, "generar_sbom", falla)
+    assert escaneo.escanear(tmp_path, [], timeout=30).completo is False
+
+
+def test_motivos_redactados(monkeypatch, tmp_path):
+    monkeypatch.setenv("GITHUB_TOKEN", "token-super-secreto-99")
+
+    def falla(*a, **k):
+        raise RuntimeError("error con token-super-secreto-99 en la salida")
+
+    monkeypatch.setattr(escaneo, "generar_sbom", falla)
+    resultado = escaneo.escanear(tmp_path, [], timeout=30)
+    assert "token-super-secreto-99" not in resultado.fuentes_omitidas[0].motivo

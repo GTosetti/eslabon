@@ -11,7 +11,7 @@ import functools
 import re
 
 from eslabon.colectores.base import Colector, Contexto
-from eslabon.ejecutor import Herramienta, ejecutar_json
+from eslabon.ejecutor import Herramienta, HerramientaFallo, ejecutar_json
 from eslabon.modelos import (
     Ecosistema,
     Finding,
@@ -27,8 +27,9 @@ from eslabon.senales import confianza_de, evidencia, tipo_dominante
 OSV_SCANNER = Herramienta("osv-scanner", "osv-scanner", "ESLABON_OSV_SCANNER")
 
 # Códigos de salida documentados de osv-scanner: 0 = sin hallazgos, 1 = hay hallazgos,
-# 128 = no encontró paquetes que analizar. Los tres son ejecuciones correctas.
-_CODIGOS_OK = (0, 1, 128)
+# 128 = no encontró paquetes que analizar. eslabon siempre le pasa un SBOM con paquetes,
+# así que 128 significa que NO entendió el SBOM: es un fallo, no un resultado limpio.
+_CODIGOS_OK = (0, 1)
 
 # Tipos de rango con versiones publicadas. Los rangos "GIT" usan hashes de commit.
 _RANGOS_DE_VERSION = {"ECOSYSTEM", "SEMVER"}
@@ -36,6 +37,7 @@ _RANGOS_DE_VERSION = {"ECOSYSTEM", "SEMVER"}
 
 class ColectorOSV(Colector):
     nombre = "osv"
+    esencial = True  # es la fuente de avisos publicados (CVE y MAL-)
 
     def recolectar(self, paquetes: list[Paquete], ctx: Contexto) -> list[Finding]:
         sbom = ctx.dir_trabajo / "eslabon-osv.cdx.json"
@@ -43,7 +45,9 @@ class ColectorOSV(Colector):
         documento = ejecutar_json(OSV_SCANNER,
                                   ["scan", "source", "-L", str(sbom), "--format", "json"],
                                   timeout=ctx.timeout, codigos_ok=_CODIGOS_OK)
-        return hallazgos_desde_osv(documento or {})
+        if not documento:
+            raise HerramientaFallo("osv-scanner no devolvió resultados (salida vacía)")
+        return hallazgos_desde_osv(documento)
 
 
 def hallazgos_desde_osv(documento: dict) -> list[Finding]:
@@ -184,4 +188,4 @@ def _versiones_corregidas(avisos: list[dict], ecosistema: Ecosistema, nombre: st
 
 
 def _clave_version(v: str) -> list[int]:
-    return [int(n) for n in re.findall(r"\d+", v)]
+    return [int(n[:18]) for n in re.findall(r"\d+", v)]  # acota números absurdos

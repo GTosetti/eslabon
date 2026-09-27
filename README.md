@@ -14,8 +14,10 @@ It does not try to replace Trivy or Grype. What it adds:
 2. **Explainability.** Every finding states why it was raised, with evidence from each source.
 3. **SOC-native output.** JSON events for a Wazuh agent, plus a Wazuh decoder/rules and Sigma rules.
 
-> **Status: early development (phase F1).** Right now only Syft + OSV-Scanner are wired in. See
-> [`docs/bitacora.md`](docs/bitacora.md) for progress.
+> **Status: early development (phases F0–F3 done).** All five sources are wired in. GuardDog has
+> only been exercised with synthetic output so far, and the Wazuh rules are **not yet validated
+> against a real manager**. See [`docs/bitacora.md`](docs/bitacora.md) and
+> [`docs/scoring.md`](docs/scoring.md).
 
 ## How it works
 
@@ -55,6 +57,28 @@ eslabon scan . --formato json -o out.json
 
 **eslabon never installs or executes the packages it analyzes.** All analysis is static or
 metadata-based.
+
+Output formats: `-f tabla` (default), `json`, `sarif` (SARIF 2.1.0, for GitHub Code Scanning) and
+`siem` (JSON Lines for Wazuh; see [`integrations/wazuh`](integrations/wazuh/README.md) and
+[`integrations/sigma`](integrations/sigma/README.md)).
+
+Exit codes (safe for CI; it fails closed):
+
+| Code | Meaning |
+|---|---|
+| 0 | No findings at or above `--fallar-en` (default `alta`) |
+| 1 | Findings at or above `--fallar-en` |
+| 2 | Usage error |
+| 3 | Incomplete analysis (no inventory, or the advisory source failed). Zero findings here is **not** a clean result. Use `--permitir-degradado` to opt out |
+
+Security notes:
+- External tools are resolved from `PATH` only, never from the current directory.
+- `.bat` and `.cmd` wrappers are refused.
+- Tools run without secrets in their environment. Only Scorecard gets `GITHUB_TOKEN`.
+- Package names from lockfiles are validated against each registry's grammar.
+- Error text is redacted before it reaches any output.
+- In CI, do not let untrusted contributors set `ESLABON_*` variables: they choose which command
+  runs.
 
 ## Development
 

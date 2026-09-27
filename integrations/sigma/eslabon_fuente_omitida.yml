@@ -1,0 +1,23 @@
+title: Escaneo de supply chain con visibilidad reducida (eslabon)
+id: 5b348d2b-0ca1-4f69-98c6-7f0c49321655
+status: experimental
+description: |
+    Una de las fuentes de eslabon (Syft, OSV-Scanner, deps.dev, Scorecard, GuardDog) no se
+    pudo consultar o solo analizó una parte. Un escaneo "limpio" con fuentes omitidas no
+    es un escaneo limpio.
+author: Guillermo Tosetti
+date: 2026-09-26
+logsource:
+    product: eslabon
+    service: supply_chain
+detection:
+    selection:
+        eslabon.evento: fuente_omitida
+    condition: selection
+fields:
+    - eslabon.fuente
+    - eslabon.motivo
+    - eslabon.equipo
+falsepositives:
+    - GuardDog no instalado de forma deliberada
+level: low

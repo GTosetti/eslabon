@@ -1,0 +1,29 @@
+title: Repositorio de origen débil en una dependencia (eslabon)
+id: 4740bdc6-6a65-432c-86a7-82947e9738da
+status: experimental
+description: |
+    OpenSSF Scorecard detecta en el repositorio de origen de una dependencia un mecanismo
+    concreto de compromiso previo a la publicación (workflow de CI peligroso, binarios
+    versionados) o falta de mantenimiento.
+references:
+    - https://attack.mitre.org/techniques/T1195/002/
+    - https://github.com/ossf/scorecard/blob/main/docs/checks.md
+author: Guillermo Tosetti
+date: 2026-09-26
+tags:
+    - attack.initial-access
+    - attack.t1195.002
+logsource:
+    product: eslabon
+    service: supply_chain
+detection:
+    selection:
+        eslabon.evento: hallazgo
+        eslabon.tipo: riesgo_origen
+    condition: selection
+fields:
+    - eslabon.paquete
+    - eslabon.explicacion
+falsepositives:
+    - Librerías estables sin actividad reciente (el check Maintained las marca igual)
+level: low

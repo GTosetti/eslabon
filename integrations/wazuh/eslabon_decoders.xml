@@ -1,0 +1,23 @@
+<!--
+  eslabon: decoder de Wazuh
+  ESTADO: NO VALIDADO CONTRA UN MANAGER. Pendiente de probar en el laboratorio con
+  /var/ossec/bin/wazuh-logtest (ver README.md, sección "Validación pendiente").
+
+  Hay dos formas de que los eventos de eslabon lleguen a Wazuh:
+
+  1. Fichero JSON Lines leído por un agente, con <log_format>json</log_format> (la
+     RECOMENDADA). En ese modo Wazuh usa su decoder JSON incorporado (llamado "json") y
+     este fichero NO hace falta: las reglas aceptan ese decoder.
+
+  2. Reenvío por syslog, con el nombre de programa "eslabon", por ejemplo:
+         logger -t eslabon "$(cat evento.json)"
+     Wazuh separa la cabecera syslog, deja el JSON como mensaje y este decoder lo
+     interpreta. Instalar en /var/ossec/etc/decoders/eslabon_decoders.xml.
+
+  En los dos casos los campos quedan con el mismo nombre (eslabon.tipo,
+  eslabon.severidad, ...), así que las mismas reglas sirven para ambos.
+-->
+<decoder name="eslabon">
+  <program_name>^eslabon$</program_name>
+  <plugin_decoder>JSON_Decoder</plugin_decoder>
+</decoder>

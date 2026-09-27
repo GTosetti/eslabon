@@ -11,7 +11,7 @@ import re
 from enum import StrEnum
 from urllib.parse import quote
 
-from pydantic import BaseModel, Field, computed_field, field_validator
+from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
 
 
 class Ecosistema(StrEnum):
@@ -123,6 +123,15 @@ def ordenar_ids(ids: list[str]) -> list[str]:
     return sorted(set(ids), key=clave)
 
 
+# Gramática de nombres de cada registro (npm admite mayúsculas en paquetes antiguos) y de
+# versiones (semver de npm y PEP 440 de PyPI, incluidos epoch "!" y local "+").
+_NOMBRE_VALIDO = {
+    Ecosistema.NPM: re.compile(r"(@[A-Za-z0-9~][A-Za-z0-9._~-]*/)?[A-Za-z0-9~][A-Za-z0-9._~-]*"),
+    Ecosistema.PYPI: re.compile(r"[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?"),
+}
+_VERSION_VALIDA = re.compile(r"[A-Za-z0-9][A-Za-z0-9.+!_~-]{0,127}")
+
+
 class Paquete(BaseModel):
     """Una entrada del inventario (SBOM): qué paquete, qué versión, dónde se declaró."""
 
@@ -130,6 +139,19 @@ class Paquete(BaseModel):
     nombre: str
     version: str
     ubicaciones: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _nombre_y_version_validos(self) -> Paquete:
+        # Los nombres y versiones salen de lockfiles que pueden ser hostiles, y luego viajan
+        # como argumentos a otras herramientas (guarddog), en URLs (deps.dev) y en alertas
+        # del SIEM. Se exige la gramática real de cada registro: nada de "--opcion",
+        # "..", espacios, comillas ni caracteres de control.
+        if not _NOMBRE_VALIDO[self.ecosistema].fullmatch(self.nombre):
+            raise ValueError(f"nombre de paquete no válido para {self.ecosistema.value}: "
+                             f"{self.nombre!r}")
+        if not _VERSION_VALIDA.fullmatch(self.version):
+            raise ValueError(f"versión no válida: {self.version!r}")
+        return self
 
     @computed_field
     @property
@@ -207,6 +229,10 @@ class Finding(BaseModel):
         return sorted({t for tipo in tipos for t in TECNICAS_ATTACK[tipo]})
 
     @property
+    def purl(self) -> str:
+        return construir_purl(self.ecosistema, self.paquete, self.version)
+
+    @property
     def clave(self) -> tuple[str, str, str]:
         """Identidad del paquete afectado, con el nombre normalizado."""
         return (self.ecosistema.value, normalizar_nombre(self.ecosistema, self.paquete),
@@ -217,6 +243,15 @@ class FuenteOmitida(BaseModel):
     fuente: str
     motivo: str
 
+    @field_validator("motivo")
+    @classmethod
+    def _sin_secretos(cls, motivo: str) -> str:
+        # El motivo suele traer la salida de error de una herramienta, y viaja al SIEM, al
+        # SARIF y a la terminal: es el único punto por el que pasa, así que se redacta aquí.
+        from eslabon.ejecutor import redactar
+
+        return redactar(motivo)
+
 
 class ResultadoScan(BaseModel):
     objetivo: str
@@ -225,3 +260,6 @@ class ResultadoScan(BaseModel):
     hallazgos: list[Finding]
     fuentes_usadas: list[str]
     fuentes_omitidas: list[FuenteOmitida]
+    # False si el análisis quedó degradado: sin inventario o sin la fuente de avisos (OSV).
+    # Un resultado incompleto con 0 hallazgos NO es un resultado limpio.
+    completo: bool = True

@@ -99,3 +99,67 @@
 - Correlación de señales débiles: 0,20 + 0,60 + 0,30 de fuentes distintas → 0,776.
 - Independencia de fuentes: dos reglas de la misma herramienta no son dos testigos.
 - El tapón `0.0.1-security` de npm: el propio registro "confiesa" que retiró malware.
+
+## F3: Salidas, integraciones SIEM y endurecimiento (2026-09-26)
+
+**Qué se hizo**
+- Salidas nuevas: **SARIF 2.1.0** (`-f sarif`) y **eventos SIEM en JSON Lines** (`-f siem`).
+  JSON ya existía.
+- `integrations/wazuh/`: decoder, reglas 100100–100160 con MITRE T1195.001/.002 y README con la
+  configuración del agente. **No validadas contra un manager.**
+- `integrations/sigma/`: 6 reglas equivalentes, validadas con pySigma (0 problemas).
+- Revisiones de cierre:
+  - `code-review` de F3: 6 problemas en SARIF, README y GuardDog.
+  - Revisión de seguridad del repositorio completo: 2 altos, 4 medios y 6 bajos.
+  - Todo corregido con tests, salvo el timeout con Docker (documentado).
+  - `simplify` sobre F3.
+- Auditoría de las dependencias propias, escaneándolas con el propio eslabon: ver
+  `docs/dependencias.md`.
+
+**Endurecimiento de seguridad (lo más importante de esta fase)**
+- **Secuestro de herramientas (alto).** En Windows se buscaban ejecutables en la carpeta actual:
+  un `syft.bat` dentro de un repositorio escaneado se habría ejecutado. Ahora se buscan solo en el
+  PATH y se rechazan `.bat` y `.cmd`.
+- **Fallar en abierto (alto).** El CLI siempre salía con 0. Ahora sale con 1 si hay hallazgos
+  iguales o superiores a `--fallar-en` (por defecto `alta`) y con 3 si el análisis quedó incompleto.
+  El SARIF ya no dice "éxito" cuando no se analizó nada.
+- **Inyección de argumentos.** Los nombres y versiones de los lockfiles se validan con la gramática
+  de npm y PyPI, y el nombre del paquete va después de `--`.
+- **Secretos.** Las herramientas reciben un entorno sin tokens (solo Scorecard recibe
+  `GITHUB_TOKEN`), y todo motivo de error se redacta.
+- **"Limpio" falso.** Ya no se da por limpio un OSV que no analizó nada (código 128 o salida
+  vacía), ni un inventario vacío.
+- **Otros.**
+  - Terminal: se quitan las secuencias ANSI y las marcas bidi.
+  - SIEM en ASCII: los saltos de línea Unicode no parten un evento.
+  - HTTP: sin redirecciones a `http://` ni a otro host, y con un máximo de 20 MB por respuesta.
+  - El propio código tenía **caracteres bidi invisibles** en una expresión regular. Ahora son
+    escapes visibles.
+
+**Qué demostró (condición de salida)**
+- Los tres formatos se generan y se validan en tests:
+  - el SARIF, contra el **esquema oficial de OASIS**, que se descargó de schemastore.org (su `$id`
+    apunta al repositorio `oasis-tcs/sarif-spec`), también con la salida en vivo;
+  - el JSON, recargándolo en el modelo;
+  - el JSONL, línea por línea, con campos simples.
+- Para cada tipo de evento, un test simula qué regla de Wazuh dispara (exactamente una), y
+  comprueba que la regla Sigma equivalente detecta los mismos eventos.
+- `pytest`: **154 tests pasan**. `ruff check .`: limpio.
+
+**Qué falló o quedó pendiente**
+- **Wazuh no está validado contra un manager real.** Eso se hace en otra sesión, con el laboratorio
+  (pasos en `integrations/wazuh/README.md`).
+- La auditoría `insecure-defaults:audit` **no se pudo ejecutar**: el entorno rechazó su script por
+  contener caracteres de control. La cubrió en parte la revisión de seguridad manual.
+- La skill `security-review` requiere un remoto `origin`, que el proyecto no tiene. Se hizo con un
+  agente dedicado.
+- Al vencer el timeout con `docker run`, el contenedor sigue vivo.
+- El SARIF depende del directorio desde el que se ejecuta (la raíz del repositorio). Mejora
+  propuesta: una opción `--srcroot`.
+- La skill `supply-chain-risk-auditor` completa, y el lockfile con hashes de las dependencias
+  propias, quedan pendientes de tu decisión (ver `docs/dependencias.md`).
+
+**Conceptos clave**
+- SARIF: reglas, resultados, `partialFingerprints` estables y `security-severity`.
+- Fallar en cerrado: en seguridad, "no pude mirar" nunca debe verse igual que "miré y está limpio".
+- Nunca confiar en datos del objetivo analizado: nombres, rutas y texto pueden ser un ataque.

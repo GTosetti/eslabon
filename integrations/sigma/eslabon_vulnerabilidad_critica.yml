@@ -1,0 +1,27 @@
+title: Vulnerabilidad crítica conocida en una dependencia (eslabon)
+id: 6639d0fc-1a04-40c1-9514-a373f92b2be5
+status: experimental
+description: |
+    Una dependencia está en el rango afectado de un aviso con CVSS >= 9.0 (CVE, GHSA o
+    PYSEC). No es una técnica de ataque en sí misma, así que no se mapea a ATT&CK.
+references:
+    - https://osv.dev/
+author: Guillermo Tosetti
+date: 2026-09-26
+logsource:
+    product: eslabon
+    service: supply_chain
+detection:
+    selection:
+        eslabon.evento: hallazgo
+        eslabon.tipo: vuln
+        eslabon.severidad: critica
+    condition: selection
+fields:
+    - eslabon.paquete
+    - eslabon.paquete_version
+    - eslabon.id
+    - eslabon.remediacion
+falsepositives:
+    - El código vulnerable del paquete no se usa en la aplicación
+level: high

@@ -1,0 +1,30 @@
+title: Dependencia sospechosa (eslabon)
+id: f443f6f5-92a1-4ce0-9c78-ca4ec3f331f7
+status: experimental
+description: |
+    Una heurística fuerte, o dos débiles de fuentes distintas, apuntan a un posible
+    compromiso de la dependencia (confianza entre 0.50 y 0.80). Requiere revisión manual.
+references:
+    - https://attack.mitre.org/techniques/T1195/001/
+author: Guillermo Tosetti
+date: 2026-09-26
+tags:
+    - attack.initial-access
+    - attack.t1195.001
+logsource:
+    product: eslabon
+    service: supply_chain
+detection:
+    selection:
+        eslabon.evento: hallazgo
+        eslabon.tipo: sospechoso
+        eslabon.severidad: media
+    condition: selection
+fields:
+    - eslabon.paquete
+    - eslabon.paquete_version
+    - eslabon.confianza
+    - eslabon.explicacion
+falsepositives:
+    - Versiones nuevas legítimas de paquetes con scripts de instalación
+level: medium

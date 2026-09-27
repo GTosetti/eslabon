@@ -32,6 +32,6 @@ def test_scan_real_del_proyecto_demo(proyecto_demo):
 def test_cli_muestra_tabla(proyecto_demo):
     # Terminal ancha: con 80 columnas rich parte los IDs en varias líneas.
     r = CliRunner().invoke(cli.app, ["scan", str(proyecto_demo)], env={"COLUMNS": "250"})
-    assert r.exit_code == 0, r.output
+    assert r.exit_code == 1, r.output  # hay CVE de severidad alta: --fallar-en alta
     assert "lodash" in r.output
     assert "CVE-2019-10906" in r.output

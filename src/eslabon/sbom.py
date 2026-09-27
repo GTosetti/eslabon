@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
+from dataclasses import dataclass, field
 from pathlib import Path
 from urllib.parse import unquote
+
+from pydantic import ValidationError
 
 from eslabon.ejecutor import Herramienta, ejecutar_json
 from eslabon.modelos import Ecosistema, Paquete
@@ -29,36 +33,68 @@ def objetivo_syft(objetivo: Path) -> str:
     return f"dir:{objetivo}" if objetivo.is_dir() else f"file:{objetivo}"
 
 
-def generar_sbom(objetivo: Path, timeout: float) -> list[Paquete]:
+@dataclass
+class Inventario:
+    paquetes: list[Paquete]
+    # Entradas con nombre o versión que no cumplen la gramática del registro (posible
+    # lockfile manipulado): se descartan y se informa.
+    descartados: list[str] = field(default_factory=list)
+    # Artefactos de ecosistemas que eslabon todavía no analiza (Go, Maven...): cobertura
+    # parcial, que también se informa.
+    no_soportados: Counter[str] = field(default_factory=Counter)
+
+    def avisos(self) -> list[str]:
+        avisos = []
+        if self.descartados:
+            avisos.append(f"{len(self.descartados)} entradas descartadas por nombre o versión "
+                          f"no válidos: {', '.join(self.descartados[:3])}")
+        if self.no_soportados:
+            detalle = ", ".join(f"{n} {t}" for t, n in self.no_soportados.most_common())
+            avisos.append(f"artefactos de ecosistemas no soportados, sin analizar: {detalle}")
+        return avisos
+
+
+def generar_sbom(objetivo: Path, timeout: float) -> Inventario:
     documento = ejecutar_json(SYFT, ["scan", objetivo_syft(objetivo), "-o", "syft-json", "-q"],
                               timeout=timeout)
-    return paquetes_desde_syft(documento or {})
+    return inventario_desde_syft(documento or {})
 
 
 def paquetes_desde_syft(documento: dict) -> list[Paquete]:
-    """Traduce el JSON de Syft a nuestra lista de Paquete (sin duplicados).
+    return inventario_desde_syft(documento).paquetes
+
+
+def inventario_desde_syft(documento: dict) -> Inventario:
+    """Traduce el JSON de Syft a nuestro inventario de Paquete (sin duplicados).
 
     Excluye el propio proyecto: Syft lista la raíz de un package-lock.json como un paquete
     más, pero no es una dependencia (no se descargó de ningún registro).
     """
+    descartados: list[str] = []
+    no_soportados: Counter[str] = Counter()
     # En Syft, "A dependency-of B" se guarda como parent=A, child=B.
     son_dependencia = {r["parent"] for r in documento.get("artifactRelationships", [])
                        if r.get("type") == "dependency-of"}
     vistos: dict[tuple[str, str, str], Paquete] = {}
     for artefacto in documento.get("artifacts", []):
         ecosistema = _TIPOS_SYFT.get(artefacto.get("type", ""))
-        if ecosistema is None or not artefacto.get("version"):
+        if ecosistema is None:
+            no_soportados[artefacto.get("type") or "desconocido"] += 1
             continue
-        if _es_raiz_del_proyecto(artefacto, son_dependencia):
+        if not artefacto.get("version") or _es_raiz_del_proyecto(artefacto, son_dependencia):
             continue
         ubicaciones = [loc.get("path", "") for loc in artefacto.get("locations", [])]
-        paquete = Paquete(ecosistema=ecosistema, nombre=artefacto["name"],
-                          version=artefacto["version"], ubicaciones=ubicaciones)
+        try:
+            paquete = Paquete(ecosistema=ecosistema, nombre=artefacto["name"],
+                              version=artefacto["version"], ubicaciones=ubicaciones)
+        except ValidationError:
+            descartados.append(repr(artefacto.get("name", ""))[:60])
+            continue
         if paquete.clave in vistos:
             vistos[paquete.clave].ubicaciones.extend(ubicaciones)
         else:
             vistos[paquete.clave] = paquete
-    return [vistos[clave] for clave in sorted(vistos)]
+    return Inventario([vistos[clave] for clave in sorted(vistos)], descartados, no_soportados)
 
 
 def _es_raiz_del_proyecto(artefacto: dict, son_dependencia: set[str]) -> bool:

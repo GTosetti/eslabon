@@ -23,7 +23,11 @@ from eslabon.ejecutor import Herramienta, HerramientaNoDisponible, ejecutar_json
 from eslabon.modelos import Evidencia, Finding, Paquete
 from eslabon.senales import evidencia, hallazgo_de_senales
 
-SCORECARD = Herramienta("scorecard", "scorecard", "ESLABON_SCORECARD")
+# Scorecard es la ÚNICA herramienta que recibe el token (el resto recibe un entorno sin
+# secretos). Son las variables que lee, según su código fuente (tokens/accessor.go).
+_VARIABLES_TOKEN = ("GITHUB_TOKEN", "GH_TOKEN", "GITHUB_AUTH_TOKEN", "GH_AUTH_TOKEN")
+SCORECARD = Herramienta("scorecard", "scorecard", "ESLABON_SCORECARD",
+                       entorno_permitido=_VARIABLES_TOKEN)
 
 # check de Scorecard -> (señal del catálogo, puntaje por debajo del cual se marca).
 CHECKS = {

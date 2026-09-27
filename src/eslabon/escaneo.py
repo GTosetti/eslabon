@@ -25,17 +25,25 @@ def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: 
     usadas: list[str] = []
     hallazgos: list[Finding] = []
 
+    def omitir(fuente: str, motivo: str) -> None:
+        omitidas.append(FuenteOmitida(fuente=fuente, motivo=motivo))  # se redacta al crearse
+
     if isinstance(objetivo, Paquete):
         paquetes = [objetivo]
         etiqueta = objetivo.purl
     else:
         etiqueta = str(objetivo)
         try:
-            paquetes = generar_sbom(objetivo, timeout=timeout)
+            inventario = generar_sbom(objetivo, timeout=timeout)
+            paquetes = inventario.paquetes
             usadas.append("syft")
+            for aviso in inventario.avisos():
+                omitir("syft", f"parcial: {aviso}")
+            if not paquetes:
+                omitir("syft", "inventario vacío: no se encontró ningún paquete npm ni PyPI")
         except Exception as exc:  # noqa: BLE001 - cualquier fallo se reporta, no aborta
             paquetes = []
-            omitidas.append(FuenteOmitida(fuente="syft", motivo=f"{type(exc).__name__}: {exc}"))
+            omitir("syft", f"{type(exc).__name__}: {exc}")
 
     # Sin inventario no hay nada que analizar: los colectores no se ejecutan ni se marcan
     # como "usados", para no dar a entender que el escaneo salió limpio.
@@ -54,10 +62,9 @@ def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: 
                 except AnalisisParcial as exc:
                     hallazgos.extend(exc.hallazgos)
                     usadas.append(colector.nombre)
-                    omitidas.append(FuenteOmitida(fuente=colector.nombre, motivo=str(exc)))
+                    omitir(colector.nombre, str(exc))
                 except Exception as exc:  # noqa: BLE001
-                    omitidas.append(FuenteOmitida(fuente=colector.nombre,
-                                                  motivo=f"{type(exc).__name__}: {exc}"))
+                    omitir(colector.nombre, f"{type(exc).__name__}: {exc}")
 
     hallazgos = correlacionar(hallazgos)
     return ResultadoScan(
@@ -67,4 +74,6 @@ def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: 
         hallazgos=hallazgos,
         fuentes_usadas=usadas,
         fuentes_omitidas=omitidas,
+        # Degradado: sin inventario, o sin la fuente de avisos publicados (OSV).
+        completo=bool(paquetes) and all(c.nombre in usadas for c in colectores if c.esencial),
     )

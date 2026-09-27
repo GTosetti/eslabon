@@ -1,0 +1,35 @@
+title: Dependencia sospechosa con confianza alta (eslabon)
+id: 56185545-5d78-4525-8c1e-7678f392b9fb
+status: experimental
+description: |
+    Varias señales débiles de fuentes independientes (versión reciente, código de red
+    durante la instalación, dominio de correo del mantenedor re-registrado, workflow de CI
+    peligroso...) coinciden en la misma dependencia y superan el umbral de confianza alta
+    (>= 0.80). Es el patrón típico de un paquete comprometido que todavía no tiene aviso.
+references:
+    - https://attack.mitre.org/techniques/T1195/001/
+author: Guillermo Tosetti
+date: 2026-09-26
+tags:
+    - attack.initial-access
+    - attack.t1195.001
+logsource:
+    product: eslabon
+    service: supply_chain
+detection:
+    selection:
+        eslabon.evento: hallazgo
+        eslabon.tipo: sospechoso
+        eslabon.severidad:
+            - alta
+            - critica
+    condition: selection
+fields:
+    - eslabon.paquete
+    - eslabon.paquete_version
+    - eslabon.confianza
+    - eslabon.fuentes
+    - eslabon.explicacion
+falsepositives:
+    - Paquetes legítimos que descargan binarios al instalarse (drivers, herramientas nativas)
+level: high
