@@ -36,11 +36,20 @@ def generar_sbom(objetivo: Path, timeout: float) -> list[Paquete]:
 
 
 def paquetes_desde_syft(documento: dict) -> list[Paquete]:
-    """Traduce el JSON de Syft a nuestra lista de Paquete (sin duplicados)."""
+    """Traduce el JSON de Syft a nuestra lista de Paquete (sin duplicados).
+
+    Excluye el propio proyecto: Syft lista la raíz de un package-lock.json como un paquete
+    más, pero no es una dependencia (no se descargó de ningún registro).
+    """
+    # En Syft, "A dependency-of B" se guarda como parent=A, child=B.
+    son_dependencia = {r["parent"] for r in documento.get("artifactRelationships", [])
+                       if r.get("type") == "dependency-of"}
     vistos: dict[tuple[str, str, str], Paquete] = {}
     for artefacto in documento.get("artifacts", []):
         ecosistema = _TIPOS_SYFT.get(artefacto.get("type", ""))
         if ecosistema is None or not artefacto.get("version"):
+            continue
+        if _es_raiz_del_proyecto(artefacto, son_dependencia):
             continue
         ubicaciones = [loc.get("path", "") for loc in artefacto.get("locations", [])]
         paquete = Paquete(ecosistema=ecosistema, nombre=artefacto["name"],
@@ -50,6 +59,13 @@ def paquetes_desde_syft(documento: dict) -> list[Paquete]:
         else:
             vistos[paquete.clave] = paquete
     return [vistos[clave] for clave in sorted(vistos)]
+
+
+def _es_raiz_del_proyecto(artefacto: dict, son_dependencia: set[str]) -> bool:
+    metadatos = artefacto.get("metadata") or {}
+    return (artefacto.get("type") == "npm"
+            and "resolved" in metadatos and not metadatos["resolved"]
+            and artefacto.get("id") not in son_dependencia)
 
 
 def paquete_desde_texto(texto: str) -> Paquete:

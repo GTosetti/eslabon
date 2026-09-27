@@ -10,6 +10,7 @@ import typer
 
 from eslabon import __version__
 from eslabon.colectores import colectores_por_defecto
+from eslabon.colectores.guarddog import MAX_PAQUETES_POR_DEFECTO
 from eslabon.ejecutor import TIMEOUT_POR_DEFECTO
 from eslabon.escaneo import escanear
 from eslabon.salidas import RENDERIZADORES, Formato, tabla
@@ -40,6 +41,9 @@ def scan(
                                                 help="Fichero donde escribir el resultado")] = None,
     timeout: Annotated[float, typer.Option(help="Segundos máximos por herramienta")] =
         TIMEOUT_POR_DEFECTO,
+    guarddog_max: Annotated[int, typer.Option(
+        min=0, help="Máximo de paquetes que analiza GuardDog (descarga cada uno)")] =
+        MAX_PAQUETES_POR_DEFECTO,
 ) -> None:
     """Analiza las dependencias del objetivo y muestra los hallazgos."""
     try:
@@ -48,7 +52,7 @@ def scan(
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(code=2) from exc
 
-    resultado = escanear(entrada, colectores_por_defecto(), timeout=timeout)
+    resultado = escanear(entrada, colectores_por_defecto(guarddog_max), timeout=timeout)
 
     if salida:
         salida.write_text(RENDERIZADORES[formato](resultado), encoding="utf-8")

@@ -1,4 +1,4 @@
-"""Colector de OSV-Scanner: vulnerabilidades conocidas y paquetes maliciosos (avisos MAL-).
+"""Colector de OSV-Scanner: vulnerabilidades conocidas y paquetes maliciosos.
 
 OSV (https://osv.dev) es una base de datos abierta que agrega avisos de muchas
 fuentes: GitHub (GHSA), PyPA (PYSEC), NVD (CVE) y OpenSSF Malicious Packages (MAL).
@@ -7,13 +7,13 @@ El mismo problema puede tener un ID en cada una: esos son los "alias".
 
 from __future__ import annotations
 
+import functools
 import re
 
 from eslabon.colectores.base import Colector, Contexto
 from eslabon.ejecutor import Herramienta, ejecutar_json
 from eslabon.modelos import (
     Ecosistema,
-    Evidencia,
     Finding,
     Paquete,
     Severidad,
@@ -22,17 +22,13 @@ from eslabon.modelos import (
     ordenar_ids,
 )
 from eslabon.sbom import escribir_cyclonedx
+from eslabon.senales import confianza_de, evidencia, tipo_dominante
 
 OSV_SCANNER = Herramienta("osv-scanner", "osv-scanner", "ESLABON_OSV_SCANNER")
 
 # Códigos de salida documentados de osv-scanner: 0 = sin hallazgos, 1 = hay hallazgos,
 # 128 = no encontró paquetes que analizar. Los tres son ejecuciones correctas.
 _CODIGOS_OK = (0, 1, 128)
-
-# Confianza de que el aviso aplica a este paquete@versión. OSV compara la versión
-# exacta contra los rangos afectados que publica el aviso, así que la coincidencia es
-# muy fiable. No es 1.0 porque no sabemos si el código vulnerable se usa de verdad.
-CONFIANZA_AVISO_OSV = 0.9
 
 # Tipos de rango con versiones publicadas. Los rangos "GIT" usan hashes de commit.
 _RANGOS_DE_VERSION = {"ECOSYSTEM", "SEMVER"}
@@ -70,25 +66,36 @@ def hallazgos_desde_osv(documento: dict) -> list[Finding]:
 def _hallazgo_de_grupo(ecosistema: Ecosistema, pkg: dict, grupo: dict,
                        avisos: dict[str, dict]) -> Finding:
     ids = ordenar_ids([*grupo["ids"], *grupo.get("aliases", [])])
-    resumenes = {i: _resumen(avisos[i]) for i in grupo["ids"] if i in avisos}
+    del_grupo = [avisos[i] for i in grupo["ids"] if i in avisos]
     cvss = _a_float(grupo.get("max_severity"))
 
-    if any(i.startswith("MAL-") for i in ids):
-        tipo = Tipo.MALICIOSO
-        severidad = Severidad.CRITICA
-        motivo_sev = "es un aviso MAL- (paquete malicioso confirmado): se trata como crítico"
-        remediacion = ("Retirar el paquete de inmediato y rotar los secretos del entorno "
-                       "donde se instaló.")
+    evidencias = [
+        evidencia(ColectorOSV.nombre, clasificar_aviso(a, pkg["name"]),
+                  f"{a['id']}: {_resumen(a) or 'sin resumen'}",
+                  referencia=f"https://osv.dev/vulnerability/{a['id']}",
+                  datos={"publicado": a.get("published"), "modificado": a.get("modified")})
+        for a in del_grupo
+    ]
+    # Un aviso MAL- puede aparecer solo como alias de otro, sin su registro completo: el
+    # ID basta para saber que es un paquete malicioso.
+    # ordenar_ids pone los MAL- primero.
+    if ids[0].startswith("MAL-") and not any(e.senal == "osv-mal" for e in evidencias):
+        evidencias.append(evidencia(ColectorOSV.nombre, "osv-mal", f"{ids[0]} (alias)",
+                                    referencia=f"https://osv.dev/vulnerability/{ids[0]}"))
+    evidencias = evidencias or [evidencia(ColectorOSV.nombre, "osv-vuln", ids[0])]
+    tipo = tipo_dominante([e.tipo for e in evidencias if e.tipo])
+
+    # El colector aporta HECHOS (CVSS, versiones corregidas). La política (malicioso →
+    # crítico, remediación por tipo, confianza) la aplica el correlador.
+    if cvss is not None:
+        severidad = Severidad.desde_cvss(cvss)
+        motivo = f"CVSS máximo del grupo: {cvss} → {severidad.value}"
     else:
-        tipo = Tipo.VULN
-        if cvss is not None:
-            severidad = Severidad.desde_cvss(cvss)
-            motivo_sev = f"puntaje CVSS máximo del grupo: {cvss}"
-        else:
-            severidad = Severidad.MEDIA
-            motivo_sev = "el aviso no publica puntaje CVSS; se asume severidad media por prudencia"
-        correcciones = _versiones_corregidas([avisos[i] for i in resumenes], ecosistema,
-                                             pkg["name"])
+        severidad = Severidad.MEDIA
+        motivo = "el aviso no publica CVSS; se asume media por prudencia"
+    remediacion = None
+    if tipo is Tipo.VULN:
+        correcciones = _versiones_corregidas(del_grupo, ecosistema, pkg["name"])
         remediacion = (f"Actualizar a {', '.join(correcciones)} o posterior." if correcciones
                        else "No hay versión corregida publicada; evaluar reemplazo o mitigación.")
 
@@ -99,29 +106,60 @@ def _hallazgo_de_grupo(ecosistema: Ecosistema, pkg: dict, grupo: dict,
         version=pkg["version"],
         tipo=tipo,
         ids=ids,
-        titulo=next((r for r in resumenes.values() if r), ""),
+        titulo=next((r for a in del_grupo if (r := _resumen(a))), ""),
         severidad=severidad,
-        confianza=CONFIANZA_AVISO_OSV,
-        evidencia=[
-            Evidencia(
-                fuente=ColectorOSV.nombre,
-                descripcion=f"{i}: {resumen or 'sin resumen'}",
-                referencia=f"https://osv.dev/vulnerability/{i}",
-                datos={"publicado": avisos[i].get("published"),
-                       "modificado": avisos[i].get("modified")},
-            )
-            for i, resumen in resumenes.items()
-        ],
+        confianza=confianza_de(evidencias),
+        evidencia=evidencias,
         explicacion=(f"OSV-Scanner encontró {pkg['name']}@{pkg['version']} dentro del rango "
-                     f"afectado por {ids[0]}{alias}. Severidad {severidad.value} porque "
-                     f"{motivo_sev}."),
+                     f"afectado por {ids[0]}{alias}; {motivo}."),
         remediacion=remediacion,
     )
 
 
+# Frases con las que los avisos describen malware cuando no traen MAL- ni CWE-506.
+# Se busca solo en el resumen (o, si no hay, en la primera oración del detalle) y la frase
+# tiene que nombrar AL PAQUETE como portador del malware. Las CVE corrientes dicen cosas
+# como "a malicious user can...", "installing a malicious package can overwrite files" o
+# "accounts can be taken over": describen al atacante, no al paquete, y no deben coincidir.
+# {p} se reemplaza por el nombre del paquete (escapado).
+_PLANTILLAS_MALICIOSO = [
+    r"(embedded )?malicious (code|package|version) in {p}",   # "Malicious Package in X"
+    r"(malware|backdoor) in {p}",                              # "Embedded malware in X"
+    r"{p}[^.]{{0,80}}\b(is|was) (considered )?malicious\b",    # "X ... is considered malicious"
+    r"{p}[^.]{{0,80}}\bwas taken over\b",                      # "The X project ... was taken over"
+]
+
+
+@functools.lru_cache(maxsize=1024)
+def _patron_malicioso(nombre: str) -> re.Pattern[str]:
+    """Una sola expresión por paquete (se reutiliza para todos sus avisos)."""
+    # El nombre, como palabra completa (los nombres de npm pueden llevar "@", "/" y "-").
+    p = rf"(?<![\w@/-]){re.escape(nombre)}(?![\w/-])"
+    return re.compile("|".join(f"(?:{t.format(p=p)})" for t in _PLANTILLAS_MALICIOSO),
+                      re.IGNORECASE)
+
+
+def _frase_maliciosa(texto: str, nombre: str) -> bool:
+    return bool(_patron_malicioso(nombre).search(texto))
+
+
+def clasificar_aviso(aviso: dict, nombre: str) -> str:
+    """Señal del catálogo que corresponde a un aviso OSV, de la más fuerte a la más débil."""
+    if aviso["id"].startswith("MAL-"):
+        return "osv-mal"
+    if "CWE-506" in ((aviso.get("database_specific") or {}).get("cwe_ids") or []):
+        return "osv-cwe-506"
+    if _frase_maliciosa(_resumen(aviso), nombre):
+        return "osv-texto-malicioso"
+    return "osv-vuln"
+
+
 def _resumen(aviso: dict) -> str:
-    texto = aviso.get("summary") or (aviso.get("details") or "").strip().split("\n", 1)[0]
-    return texto[:200]
+    """El resumen del aviso o, si no tiene, la primera oración de su detalle."""
+    if aviso.get("summary"):
+        return aviso["summary"][:200]
+    detalle = (aviso.get("details") or "").strip()
+    return re.split(r"(?<=[.!?])\s|\n", detalle, maxsplit=1)[0][:200]
 
 
 def _a_float(valor: object) -> float | None:

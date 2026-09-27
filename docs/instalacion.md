@@ -158,9 +158,60 @@ predica esta herramienta.
 | C. MSVC + compilar | La sandbox igual no funcionaría en Windows | ❌ No recomendada |
 | D. `guarddog==2.9.0` (con Semgrep) | Versión vieja, sin sandbox, y Semgrep en Windows es inestable | ❌ No recomendada |
 
-El colector de GuardDog de `eslabon` (F2) se va a diseñar para aceptar un **comando configurable**
-(por ejemplo `guarddog` nativo o `docker run ... guarddog`). Así funciona igual con cualquiera de
-las opciones A o B.
+### Opción elegida: A (Docker Desktop)
+
+Docker Desktop 4.91.0 quedó instalado (F1) con `winget`, que verificó el SHA256 del instalador contra
+su manifiesto:
+
+```powershell
+winget install --id Docker.DockerDesktop --exact --accept-package-agreements --accept-source-agreements
+# -> "Successfully verified installer hash" ... "Successfully installed"
+```
+
+**Paso pendiente, a cargo del usuario.** El motor de Docker necesita WSL2, que no está instalado, y
+esto requiere permisos de administrador y reiniciar:
+
+```powershell
+# PowerShell COMO ADMINISTRADOR
+wsl --install
+# reiniciar Windows, abrir Docker Desktop una vez y aceptar sus términos
+docker version          # debe mostrar "Server: Docker Desktop"
+```
+
+Luego, para que eslabon use GuardDog dentro de Docker:
+
+```powershell
+docker pull ghcr.io/datadog/guarddog:v3.2.0
+$env:ESLABON_GUARDDOG = "docker run --rm ghcr.io/datadog/guarddog:v3.2.0"
+docker run --rm ghcr.io/datadog/guarddog:v3.2.0 --help
+```
+
+> ⚠️ **Fijá la versión `:v3.2.0`.** En el registro de imágenes de GuardDog, la etiqueta `:latest`
+> apunta todavía a la **2.x** (su workflow de publicación solo mueve `latest` con tags `v2.*`). Usar
+> `latest` sería justo el error de supply chain que eslabon quiere detectar: no fijar versiones.
+>
+> Sin confirmar: que la sandbox de GuardDog funcione dentro de Docker Desktop sobre WSL2. Si falla
+> con *"Kernel-level sandbox is not available"*, el colector lo informa en `fuentes_omitidas`, y la
+> decisión de usar `--no-sandbox` es del usuario (no se toma automáticamente).
+
+El colector de GuardDog acepta cualquier comando por `ESLABON_GUARDDOG` (el binario nativo o
+`docker run ...`), así que también funcionaría con la opción B.
+
+### Semgrep ya no participa
+
+El encargo mencionaba usar la skill de Semgrep "para entender cómo GuardDog usa Semgrep". Desde la
+3.0.0, GuardDog usa **reglas YARA** (ficheros `threat-*.yar` y `capability-*.yar`) y ya no Semgrep, así
+que esa parte no aplica. El formato de salida de la 3.2.0 se documentó leyendo su código fuente
+(`guarddog/cli.py`, `analyzer/analyzer.py`, `reporters/json.py`) y está resumido en la cabecera de
+`src/eslabon/colectores/guarddog.py`.
+
+## 4b. OpenSSF Scorecard
+
+No se instaló el CLI: su descarga no estaba entre las autorizaciones de esta fase. eslabon usa, sin
+token, el análisis semanal de Scorecard que publica deps.dev. Si en el futuro se instala el CLI
+(release oficial `scorecard_5.5.0_windows_amd64.tar.gz`, verificando contra
+`scorecard_checksums.txt`) y se define `GITHUB_TOKEN` **en el entorno**, eslabon lo usará
+automáticamente. El token nunca se pasa como argumento ni se escribe en ningún fichero.
 
 ## 5. Comprobación final
 

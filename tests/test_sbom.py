@@ -82,3 +82,10 @@ def test_interpretar_objetivo(tmp_path):
     assert interpretar_objetivo("npm:lodash@4.17.15").nombre == "lodash"
     with pytest.raises(ValueError):
         interpretar_objetivo("no-existe-ni-es-paquete")
+
+
+def test_la_raiz_del_proyecto_no_es_una_dependencia(syft_demo):
+    # Syft lista "proyecto-demo" (la raíz del package-lock.json) como un paquete más.
+    nombres = {p.nombre for p in paquetes_desde_syft(syft_demo)}
+    assert "proyecto-demo" not in nombres
+    assert {"lodash", "minimist", "requests"} <= nombres

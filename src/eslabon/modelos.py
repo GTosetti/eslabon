@@ -141,12 +141,31 @@ class Paquete(BaseModel):
         return (self.ecosistema.value, normalizar_nombre(self.ecosistema, self.nombre),
                 self.version)
 
+    def __str__(self) -> str:
+        return f"{self.nombre}@{self.version}"
+
+
+def es_tapon_seguridad(ecosistema: Ecosistema, version: str) -> bool:
+    """¿Es la versión "tapón" que publica npm al retirar un paquete malicioso?
+
+    npm reemplaza el paquete por una versión vacía llamada "0.0.1-security" (o similar)
+    cuyo repositorio es npm/security-holder, no el del paquete original.
+    """
+    return ecosistema is Ecosistema.NPM and "-security" in version
+
 
 class Evidencia(BaseModel):
-    """Qué vio una fuente concreta. Es la base de la explicabilidad."""
+    """Qué vio una fuente concreta. Es la base de la explicabilidad.
+
+    `senal`, `tipo` y `peso` vienen del catálogo (eslabon.senales). El correlador usa el
+    peso para calcular la confianza del hallazgo combinado (ver docs/scoring.md).
+    """
 
     fuente: str
     descripcion: str
+    senal: str | None = None
+    tipo: Tipo | None = None
+    peso: float | None = Field(default=None, ge=0.0, le=1.0)
     referencia: str | None = None  # URL al aviso, a la regla, etc.
     datos: dict = Field(default_factory=dict)
 
@@ -180,8 +199,12 @@ class Finding(BaseModel):
     @computed_field
     @property
     def attack(self) -> list[str]:
-        """Técnicas MITRE ATT&CK, derivadas del tipo de hallazgo."""
-        return TECNICAS_ATTACK[self.tipo]
+        """Técnicas MITRE ATT&CK, derivadas del tipo del hallazgo y de su evidencia.
+
+        Un paquete malicioso cuyo repositorio además es débil mapea a T1195.001 y T1195.002.
+        """
+        tipos = [self.tipo, *(e.tipo for e in self.evidencia if e.tipo)]
+        return sorted({t for tipo in tipos for t in TECNICAS_ATTACK[tipo]})
 
     @property
     def clave(self) -> tuple[str, str, str]:

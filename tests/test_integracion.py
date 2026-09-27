@@ -1,4 +1,5 @@
-"""Tests de integración: ejecutan Syft y OSV-Scanner de verdad (OSV consulta api.osv.dev).
+"""Tests de integración: ejecutan Syft y OSV-Scanner de verdad y consultan api.osv.dev y
+api.deps.dev.
 
 Se saltan si las herramientas no están instaladas. Correr con: pytest -m integracion
 """
@@ -21,8 +22,9 @@ pytestmark = [
 
 def test_scan_real_del_proyecto_demo(proyecto_demo):
     resultado = escanear(proyecto_demo, colectores_por_defecto(), timeout=300)
-    assert resultado.fuentes_omitidas == []
-    assert resultado.fuentes_usadas == ["syft", "osv"]
+    # GuardDog solo funciona vía Docker en Windows; si no está, es la única omisión aceptable.
+    assert {o.fuente for o in resultado.fuentes_omitidas} <= {"guarddog"}
+    assert {"syft", "osv", "depsdev", "scorecard"} <= set(resultado.fuentes_usadas)
     afectados = {h.paquete for h in resultado.hallazgos}
     assert {"requests", "jinja2", "urllib3", "lodash", "minimist"} <= afectados
 

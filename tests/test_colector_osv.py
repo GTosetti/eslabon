@@ -1,4 +1,7 @@
-from eslabon.colectores.osv import hallazgos_desde_osv
+import pytest
+
+from eslabon.colectores.osv import clasificar_aviso, hallazgos_desde_osv
+from eslabon.correlador import correlacionar
 from eslabon.modelos import Severidad, Tipo
 
 
@@ -52,7 +55,8 @@ def test_aviso_mal_es_malicioso_critico_y_mapea_t1195_001():
         "id": "MAL-2099-0001", "summary": "Malicious code in paquete-falso (npm)",
         "affected": [{"package": {"name": "paquete-falso", "ecosystem": "npm"}}],
     }])
-    [h] = hallazgos_desde_osv(doc)
+    # El colector clasifica; la política (crítico, remediación) la aplica el correlador.
+    [h] = correlacionar(hallazgos_desde_osv(doc))
     assert h.tipo is Tipo.MALICIOSO
     assert h.severidad is Severidad.CRITICA
     assert h.attack == ["T1195.001"]
@@ -68,7 +72,7 @@ def test_sin_cvss_se_asume_media_y_se_explica():
     }])
     [h] = hallazgos_desde_osv(doc)
     assert h.severidad is Severidad.MEDIA
-    assert "no publica puntaje CVSS" in h.explicacion
+    assert "no publica CVSS" in h.explicacion
     assert h.titulo == "Primera línea."
     assert h.remediacion == "Actualizar a 1.0.1 o posterior."
 
@@ -101,3 +105,33 @@ def test_nombres_pypi_se_normalizan_pep503():
     pkg.update(name="typing_extensions", ecosystem="PyPI")
     [h] = hallazgos_desde_osv(doc)
     assert h.remediacion == "Actualizar a 4.1 o posterior."
+
+
+# --- Detección de paquetes maliciosos (revisión de F2) ---------------------------------
+
+
+@pytest.mark.parametrize(("resumen", "nombre", "senal"), [
+    # Avisos reales de malware (OSV/GHSA):
+    ("Malicious code in flatmap-stream (npm)", "flatmap-stream", "osv-texto-malicioso"),
+    ("Embedded Malicious Code in ctx", "ctx", "osv-texto-malicioso"),
+    ("Embedded malware in ua-parser-js", "ua-parser-js", "osv-texto-malicioso"),
+    ("The ctx hosted project on PyPI was taken over via user account compromise", "ctx",
+     "osv-texto-malicioso"),
+    # Vulnerabilidades corrientes que describen al atacante, no al paquete:
+    ("Installing a malicious package can overwrite arbitrary files", "npm", "osv-vuln"),
+    ("Accounts can be taken over via password reset", "django", "osv-vuln"),
+    ("A malicious user can bypass authentication in requests", "requests", "osv-vuln"),
+    ("Malicious code in other-package", "package", "osv-vuln"),  # otro paquete
+])
+def test_texto_malicioso_solo_si_nombra_al_paquete(resumen, nombre, senal):
+    assert clasificar_aviso({"id": "GHSA-x", "summary": resumen}, nombre) == senal
+
+
+def test_mal_solo_como_alias_sigue_siendo_malicioso():
+    # El grupo trae un MAL- como alias pero solo el registro completo del GHSA.
+    doc = _doc_sintetico(["GHSA-zzzz"], "7.5", [{"id": "GHSA-zzzz", "summary": "algo"}])
+    doc["results"][0]["packages"][0]["groups"][0]["aliases"] = ["GHSA-zzzz", "MAL-2099-7"]
+    [h] = correlacionar(hallazgos_desde_osv(doc))
+    assert h.tipo is Tipo.MALICIOSO
+    assert h.ids[0] == "MAL-2099-7"
+    assert h.severidad is Severidad.CRITICA

