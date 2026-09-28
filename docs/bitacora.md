@@ -319,5 +319,10 @@
 
 **Pendiente**
 - Registrar la tarea en el Programador de tareas (requiere confirmación del usuario).
-- Confirmar en el dashboard las alertas de los escaneos posteriores a la rotación. La sesión del
-  dashboard expiró.
+- ~~Confirmar en el dashboard las alertas posteriores a la rotación.~~ Hecho: 87 alertas en
+  `wazuh-alerts-*` desde la rotación, todas del agente `HOST-ESLABON`, repartidas en tres escaneos:
+  - 1 crítica (100140);
+  - vulnerabilidades altas y medias (100141/100142);
+  - event-stream@3.3.5 como sospechoso medio (100121, T1195.001).
+
+  El agente siguió leyendo el fichero nuevo tras la rotación sin intervención.
