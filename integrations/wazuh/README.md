@@ -6,8 +6,9 @@
 > con el mismo código de salida para cubrir las ramas restantes. Detalle y evidencia en
 > [`docs/validacion-wazuh.md`](../../docs/validacion-wazuh.md).
 >
-> Falta la **ingesta continua**: un agente leyendo el fichero en el equipo donde corre eslabon (ver
-> "Pendiente" al final).
+> **Ingesta de punta a punta también verificada:** un agente en el equipo donde corre eslabon lee
+> `eventos.jsonl` (configuración centralizada del grupo `eslabon`), y las alertas llegan al índice
+> `wazuh-alerts-*` (30 alertas de un escaneo real).
 
 ## Qué produce eslabon
 
@@ -111,8 +112,8 @@ Por qué esos niveles:
 2. ✅ Logtest con eventos de eslabon: la fase 2 decodifica los campos `eslabon.*` (decoder `json`),
    la fase 3 dispara la regla esperada con su nivel y su técnica MITRE, y `$(eslabon.paquete)` se
    expande en la descripción.
-3. ⏳ Pendiente: `localfile` en un agente del equipo donde corre eslabon, y alertas en el dashboard
-   (índice `wazuh-alerts-*`, `rule.groups: eslabon`).
+3. ✅ Agente en el equipo de eslabon (grupo `eslabon`, `localfile` centralizado) y alertas en el
+   dashboard (`wazuh-alerts-*`, `rule.groups:eslabon`). Captura en `docs/img/wazuh-discover-eslabon.png`.
 
 Dudas que quedaron resueltas:
 - **`^alta$|^critica$` funciona con OS_Regex**: el evento "sospechoso alta" disparó la 100120.

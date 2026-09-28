@@ -59,9 +59,48 @@ Ejemplo de descripción expandida (regla 100110):
 Wazuh añade la táctica *Initial Access* y la técnica *Compromise Software Dependencies and
 Development Tools* a partir del ID T1195.001.
 
+## Ingesta de punta a punta (hecha)
+
+Arquitectura final del lab:
+
+```
+este Windows (host)                          VirtualBox · Red NAT "SOCLAB" (10.10.10.0/24)
+┌────────────────────────────┐               ┌───────────────────────────────────────────┐
+│ eslabon scan … -f siem     │               │ wazuh-siem (10.10.10.10) · Wazuh 4.14.7   │
+│   -o resultados\eventos.jsonl --anexar     │   reglas eslabon_rules.xml (100100-100160)│
+│             │              │  127.0.0.1:1514/1515 ─► analysisd → wazuh-alerts-* → dashboard │
+│ agente HOST-ESLABON (002)  ├──────────────►│   grupo "eslabon": agent.conf con el      │
+│   grupo "eslabon"          │               │   <localfile> log_format json             │
+└────────────────────────────┘               └───────────────────────────────────────────┘
+```
+
+Cambios hechos, todos con autorización del usuario:
+
+| Dónde | Cambio | Cómo deshacerlo |
+|---|---|---|
+| VirtualBox, Red NAT `SOCLAB` | `wazuh-agente` 127.0.0.1:1514 → 10.10.10.10:1514 y `wazuh-registro` 127.0.0.1:1515 → 10.10.10.10:1515 | `VBoxManage natnetwork modify --netname SOCLAB --port-forward-4 delete wazuh-agente` (ídem `wazuh-registro`) |
+| Manager | Grupo `eslabon`, cuyo `agent.conf` lee `…\eslabon\resultados\eventos.jsonl` con `log_format json` | `DELETE /groups?groups_list=eslabon` |
+| Este Windows | Agente oficial 4.14.7 (`HOST-ESLABON`, id 002, grupo `eslabon`). Lo instaló el usuario como administrador | Desinstalar "Wazuh Agent" desde Configuración |
+
+Verificaciones del instalador del agente:
+- **Integridad:** SHA512 igual al publicado en `packages.wazuh.com` (`d0cac595…`).
+- **Autenticidad:** firma Authenticode **válida**, emitida a *Wazuh, Inc*.
+
+**Resultado:** 3 escaneos (`flatmap-stream@0.1.1`, `event-stream@3.3.5` y el proyecto demo)
+generaron 33 eventos, y en `wazuh-alerts-*` aparecieron **30 alertas** de `HOST-ESLABON`:
+- 100110 (malicioso, nivel 14, T1195.001);
+- 100121 (sospechoso, nivel 7, T1195.001);
+- 100140, 100141 y 100142 (vulnerabilidades crítica, alta y media).
+
+Los 3 eventos de "resumen" disparan la 100160, de nivel 2, y **no** se guardan como alerta. Es lo
+esperado: el umbral por defecto de Wazuh para guardar alertas es 3.
+
+![Discover filtrado por rule.groups:eslabon: 30 alertas de HOST-ESLABON](img/wazuh-discover-eslabon.png)
+
 ## Pendiente
 
-- **Ingesta continua.** El único agente del lab (`WIN11-VICTIMA`, 10.10.10.20) está en una VM. Se
-  decidió instalar un agente en el equipo donde corre eslabon, pero desde ese equipo solo es
-  accesible el puerto 8443: faltan las redirecciones de VirtualBox para 1514 (eventos) y 1515
-  (registro).
+- **Escaneo programado.** Una tarea del Programador de tareas que ejecute
+  `eslabon scan … -f siem -o …\resultados\eventos.jsonl --anexar --fallar-en nunca`, con
+  `ESLABON_GUARDDOG` definida como variable de usuario.
+- **Rotación de `eventos.jsonl`.** Con `--anexar` el fichero crece sin límite.
+- Evaluar `<options>no_full_log</options>` para no duplicar el JSON completo en cada alerta.

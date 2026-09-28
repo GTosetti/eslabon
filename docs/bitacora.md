@@ -281,3 +281,17 @@
 - `wazuh-logtest`/`PUT /logtest`: se prueba una regla con un evento sin generar alertas reales.
 - Un "error de sintaxis" puede ser en realidad una referencia rota. Diagnosticar por bisección, no
   adivinando.
+
+### F5: cierre (ingesta de punta a punta)
+- **Red NAT `SOCLAB`:** se añadieron las redirecciones 1514 y 1515 hacia el manager. Desde el host
+  antes solo se llegaba al 8443.
+- **Manager:** grupo `eslabon` con `agent.conf` centralizado: `localfile` sobre
+  `resultados\eventos.jsonl`, con `log_format json`.
+- **Agente oficial 4.14.7 en este Windows:**
+  - SHA512 verificado y firma Authenticode válida de *Wazuh, Inc*;
+  - lo instaló el usuario como administrador;
+  - quedó como `HOST-ESLABON` (002), activo y en el grupo `eslabon`.
+- **Escaneos reales con `-f siem --anexar`:** 33 eventos, **30 alertas** en `wazuh-alerts-*` con su
+  regla, nivel y MITRE. Los 3 resúmenes son de nivel 2 y no se guardan como alerta (umbral 3).
+  Captura: `docs/img/wazuh-discover-eslabon.png`.
+- **Pendiente:** escaneo programado y rotación del fichero de eventos.
