@@ -228,3 +228,22 @@
 - Fijar por digest frente a fijar por etiqueta: una etiqueta se puede mover; un hash, no.
 - `--require-hashes`: el lockfile no solo fija versiones, también verifica el contenido.
 - Un compromiso sin CVE solo se ve correlacionando: quién publicó, cuándo y dónde vive el código.
+
+## Arreglo: mensajes de error de GuardDog y Docker (2026-09-28)
+
+**Problema.** Durante el tutorial aparecieron dos cosas:
+- Con Docker Desktop cerrado, eslabon decía "guarddog no devolvió JSON" en lugar de "no se pudo
+  conectar con Docker".
+- El usuario abrió Docker y eslabon seguía diciendo "herramienta no disponible". La causa:
+  `$env:ESLABON_GUARDDOG` solo vive en la ventana de PowerShell donde se define (se reprodujo en una
+  terminal nueva: la variable no estaba guardada ni a nivel de usuario ni de sistema).
+
+**Qué se hizo**
+- `ejecutar_json`: si la herramienta termina con un código distinto de 0 y sin JSON, el error muestra
+  su stderr (redactado). Antes se descartaba, porque GuardDog usa el 1 tanto para "encontré algo"
+  como para "falló".
+- Docker sin motor ("failed to connect to the docker API"): se informa como herramienta no
+  disponible, **una sola vez** y con la pista "¿está abierto Docker Desktop?".
+- Si GuardDog no se encuentra, el mensaje explica que en Windows va por Docker, cómo definir
+  `ESLABON_GUARDDOG` y cómo desactivarlo (`--guarddog-max 0`).
+- 3 tests nuevos. `pytest`: 184 pasan. `code-review`: sin errores.

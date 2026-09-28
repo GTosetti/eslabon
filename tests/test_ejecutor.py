@@ -157,3 +157,38 @@ def test_herramienta_sin_docker_no_se_toca():
     from eslabon.ejecutor import _nombrar_contenedor
 
     assert _nombrar_contenedor(["/x/syft", "run"], INEXISTENTE) == (["/x/syft", "run"], None)
+
+
+# --- Mensajes de error claros (pedido del usuario, tras el tutorial) -----------------------
+def test_sin_json_y_con_error_se_muestra_el_error_real(monkeypatch):
+    # GuardDog usa el código 1 para "encontré algo" y también para "falló": si no hay JSON,
+    # el mensaje tiene que mostrar lo que la herramienta escribió en stderr.
+    monkeypatch.setenv("ESLABON_TEST_FANTASMA", sys.executable)
+    programa = "import sys; sys.stderr.write('no pude descargar el paquete'); sys.exit(1)"
+    with pytest.raises(HerramientaFallo, match="no pude descargar el paquete"):
+        ejecutar_json(INEXISTENTE, ["-c", programa], timeout=30, codigos_ok=(0, 1))
+    # Código 0 sin salida sigue siendo "nada que informar".
+    assert ejecutar_json(INEXISTENTE, ["-c", "pass"], timeout=30, codigos_ok=(0, 1)) is None
+
+
+def test_docker_sin_motor_es_herramienta_no_disponible(monkeypatch, tmp_path):
+    import subprocess as sp
+
+    docker = tmp_path / "docker.exe"
+    docker.write_text("x", encoding="utf-8")
+    monkeypatch.setenv("ESLABON_TEST_FANTASMA", f'"{docker}" run --rm imagen:1.0')
+    error = ("failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; "
+             "check if the daemon is running")
+    monkeypatch.setattr("eslabon.ejecutor.subprocess.run",
+                        lambda comando, **kw: sp.CompletedProcess(comando, 1, "", error))
+    with pytest.raises(HerramientaNoDisponible, match="Docker no responde"):
+        ejecutar_json(INEXISTENTE, ["scan"], timeout=30, codigos_ok=(0, 1))
+
+
+def test_guarddog_ausente_explica_como_configurarlo(monkeypatch):
+    from eslabon.colectores.guarddog import GUARDDOG
+
+    monkeypatch.delenv("ESLABON_GUARDDOG", raising=False)
+    monkeypatch.setenv("PATH", "")
+    with pytest.raises(HerramientaNoDisponible, match="corre en Docker.*--guarddog-max 0"):
+        resolver_comando(GUARDDOG)

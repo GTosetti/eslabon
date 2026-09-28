@@ -21,7 +21,11 @@ from eslabon.ejecutor import Herramienta, HerramientaFallo, ejecutar_json
 from eslabon.modelos import Evidencia, Finding, Paquete
 from eslabon.senales import CATALOGO, evidencia, hallazgo_si_hay_senal
 
-GUARDDOG = Herramienta("guarddog", "guarddog", "ESLABON_GUARDDOG")
+GUARDDOG = Herramienta(
+    "guarddog", "guarddog", "ESLABON_GUARDDOG",
+    ayuda=("En Windows GuardDog corre en Docker: definí ESLABON_GUARDDOG=\"docker run --rm "
+           "ghcr.io/datadog/guarddog:v3.2.0@sha256:...\" en ESTA terminal o como variable de "
+           "usuario (ver docs/instalacion.md). Para no usarlo: --guarddog-max 0"))
 
 # GuardDog descarga y analiza cada paquete: es caro. Por defecto se analizan los primeros
 # N del inventario, y si se omiten paquetes se avisa en fuentes_omitidas.

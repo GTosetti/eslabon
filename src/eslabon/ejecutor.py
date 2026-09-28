@@ -63,6 +63,8 @@ class Herramienta:
     variable_entorno: str  # permite sobreescribir el comando, p. ej. con "docker run ..."
     # Variables sensibles que ESTA herramienta sí necesita (el resto de secretos no le llega).
     entorno_permitido: tuple[str, ...] = ()
+    # Pista para el usuario si la herramienta no se encuentra.
+    ayuda: str = ""
 
 
 # En Windows, esta variable evita que CreateProcess y shutil.which busquen ejecutables en
@@ -138,6 +140,7 @@ def resolver_comando(herramienta: Herramienta) -> list[str]:
         raise HerramientaNoDisponible(
             f"{herramienta.nombre} no está en el PATH "
             f"(se puede indicar la ruta con la variable {herramienta.variable_entorno})"
+            + (f". {herramienta.ayuda}" if herramienta.ayuda else "")
         )
     return [ruta]
 
@@ -197,12 +200,28 @@ def ejecutar(
         raise HerramientaFallo(
             f"{herramienta.nombre} superó el tiempo límite ({timeout}s)"
         ) from exc
+    if contenedor and _DOCKER_SIN_MOTOR.search(proceso.stderr):
+        # El motor de Docker no responde: no es un fallo de este paquete sino de la
+        # herramienta entera (se informa una sola vez, no una por paquete).
+        raise HerramientaNoDisponible(
+            f"{herramienta.nombre}: Docker no responde (¿está abierto Docker Desktop?): "
+            f"{_ultimas_lineas(proceso.stderr, 1)}")
     if proceso.returncode not in codigos_ok:
-        ultimas = "\n".join(proceso.stderr.strip().splitlines()[-5:])
         raise HerramientaFallo(redactar(
-            f"{herramienta.nombre} terminó con código {proceso.returncode}: {ultimas}"
+            f"{herramienta.nombre} terminó con código {proceso.returncode}: "
+            f"{_ultimas_lineas(proceso.stderr)}"
         ))
     return proceso
+
+
+# Mensajes con los que el cliente de Docker avisa que no hay motor al que conectarse.
+_DOCKER_SIN_MOTOR = re.compile(
+    r"failed to connect to the docker API|Cannot connect to the Docker daemon"
+    r"|error during connect|docker daemon is not running", re.IGNORECASE)
+
+
+def _ultimas_lineas(texto: str, n: int = 5) -> str:
+    return redactar("\n".join(texto.strip().splitlines()[-n:]))
 
 
 def ejecutar_json(
@@ -214,10 +233,18 @@ def ejecutar_json(
 ) -> Any:
     """Como `ejecutar`, pero interpreta la salida estándar como JSON.
 
-    Devuelve None si la herramienta no escribió nada.
+    Devuelve None si la herramienta terminó bien (código 0) sin escribir nada. Si terminó
+    con otro código "aceptable" (p. ej. GuardDog usa 1 tanto para "encontré algo" como para
+    "falló") y no hay JSON, fue un error: se informa con lo que la herramienta escribió en
+    su salida de errores, en vez de un genérico "no devolvió JSON".
     """
-    salida = ejecutar(herramienta, argumentos, timeout=timeout, codigos_ok=codigos_ok).stdout
+    proceso = ejecutar(herramienta, argumentos, timeout=timeout, codigos_ok=codigos_ok)
+    salida = proceso.stdout
     if not salida or salida.isspace():
+        if proceso.returncode != 0:
+            raise HerramientaFallo(
+                f"{herramienta.nombre} terminó con código {proceso.returncode} sin resultado: "
+                f"{_ultimas_lineas(proceso.stderr) or 'sin mensaje de error'}")
         return None
     try:
         return json.loads(salida)
