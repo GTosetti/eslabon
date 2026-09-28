@@ -295,3 +295,29 @@
   regla, nivel y MITRE. Los 3 resúmenes son de nivel 2 y no se guardan como alerta (umbral 3).
   Captura: `docs/img/wazuh-discover-eslabon.png`.
 - **Pendiente:** escaneo programado y rotación del fichero de eventos.
+
+## F6: Operación continua (2026-09-28)
+
+**Qué se hizo**
+- `--rotar-mb` / `--conservar`: rotación del fichero de eventos, al estilo de logrotate (`.1`,
+  `.2`…). Si Windows impide el rename, se usa copiar y truncar.
+- `scripts/escaneo_programado.ps1` (PowerShell 5.1):
+  - lee la lista de `resultados\objetivos.txt`;
+  - toma `ESLABON_GUARDDOG` de la variable de usuario;
+  - registra cada ejecución en un log UTF-8 sin BOM;
+  - se ubica en la raíz del proyecto aunque arranque en System32;
+  - sale con el código más grave.
+- `ESLABON_GUARDDOG` guardada como variable de usuario, a pedido del usuario.
+
+**Qué demostró**
+- **Rotación real sobre el fichero que el agente `HOST-ESLABON` tiene abierto:** funcionó (95 KB →
+  `.1`, fichero nuevo de 3,5 KB). El agente de Wazuh permite renombrar mientras lee.
+- **El script:** dos objetivos, código 0, 31 eventos nuevos y **GuardDog activo**. Probado también
+  arrancando desde `C:\Windows\System32`.
+- `pytest`: 188 pasan. `code-review`: 2 hallazgos (el riesgo del rename, comprobado y cubierto con el
+  plan B; y el BOM en el log), corregidos.
+
+**Pendiente**
+- Registrar la tarea en el Programador de tareas (requiere confirmación del usuario).
+- Confirmar en el dashboard las alertas de los escaneos posteriores a la rotación. La sesión del
+  dashboard expiró.

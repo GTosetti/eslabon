@@ -16,6 +16,7 @@ from eslabon.ejecutor import TIMEOUT_POR_DEFECTO
 from eslabon.escaneo import escanear
 from eslabon.modelos import ResultadoScan, Severidad
 from eslabon.salidas import RENDERIZADORES, Formato, tabla
+from eslabon.salidas.fichero import escribir
 from eslabon.sbom import interpretar_objetivo
 
 app = typer.Typer(
@@ -64,6 +65,10 @@ def scan(
         help="No salir con código 3 si el análisis quedó incompleto")] = False,
     anexar: Annotated[bool, typer.Option(
         help="Añadir al fichero de --salida en vez de sobrescribirlo (útil con -f siem)")] = False,
+    rotar_mb: Annotated[float | None, typer.Option(
+        min=0.001, help="Con --anexar: rotar el fichero si superaría este tamaño (MB)")] = None,
+    conservar: Annotated[int, typer.Option(
+        min=1, help="Con --rotar-mb: cuántas copias rotadas guardar (.1, .2, …)")] = 5,
 ) -> None:
     """Analiza las dependencias del objetivo y muestra los hallazgos.
 
@@ -73,6 +78,8 @@ def scan(
     """
     try:
         entrada = interpretar_objetivo(objetivo)
+        if rotar_mb and not (salida and anexar):
+            raise ValueError("--rotar-mb solo tiene sentido con -o <fichero> y --anexar")
     except ValueError as exc:
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(code=SALIDA_USO) from exc
@@ -82,8 +89,11 @@ def scan(
     if salida:
         # UTF-8 sin BOM, escrito por eslabon: pasar la salida por una tubería de PowerShell
         # rompería los acentos y podría añadir un BOM al principio del fichero.
-        with salida.open("a" if anexar else "w", encoding="utf-8", newline="\n") as fichero:
-            fichero.write(RENDERIZADORES[formato](resultado))
+        rotado = escribir(salida, RENDERIZADORES[formato](resultado), anexar=anexar,
+                          rotar_bytes=int(rotar_mb * 1024 * 1024) if rotar_mb else None,
+                          conservar=conservar)
+        if rotado:
+            typer.echo(f"Fichero rotado: {rotado}", err=True)
     elif formato is Formato.TABLA:
         tabla.mostrar(resultado)  # en la terminal, con colores
     else:

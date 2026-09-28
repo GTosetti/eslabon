@@ -1,0 +1,8 @@
+# Lista de objetivos para scripts\escaneo_programado.ps1
+# Copiar a resultados\objetivos.txt (resultados\ no se sube a git) y editar.
+# Una entrada por línea: una carpeta de proyecto, un lockfile o ecosistema:paquete@versión.
+# Las líneas vacías y las que empiezan con # se ignoran.
+
+# C:\ruta\a\mi-proyecto
+# C:\ruta\a\otro-proyecto\package-lock.json
+tests\fixtures\proyecto_demo
