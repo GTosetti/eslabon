@@ -1,9 +1,7 @@
 <!--
   eslabon: reglas de Wazuh (rango de IDs reservado: 100100-100199)
-  ESTADO: NO VALIDADAS CONTRA UN MANAGER. La sintaxis se comprobó con los tests de
-  eslabon (XML bien formado, IDs dentro del rango y sin repetir, y cada evento de ejemplo
-  cae en la regla esperada según las expresiones), pero NO se cargaron en un
-  wazuh-manager real. Validar con wazuh-logtest antes de usarlas (README.md).
+  ESTADO: VALIDADAS contra un wazuh-manager 4.14.7 real (lab, 2026-09-28): carga OK,
+  configuración OK y las 11 reglas probadas con logtest. Ver docs/validacion-wazuh.md.
 
   Instalar en: /var/ossec/etc/rules/eslabon_rules.xml   (o añadir a local_rules.xml)
 
@@ -14,23 +12,19 @@
 -->
 <group name="eslabon,supply_chain,">
 
-  <!-- 100100: base. Cualquier evento de eslabon, venga por el decoder JSON incorporado
-       (fichero leído con log_format json) o por el decoder "eslabon" (syslog). -->
+  <!-- 100100: base. Cualquier evento de eslabon: el agente lee el fichero JSON Lines con
+       <log_format>json</log_format> y Wazuh lo decodifica con su decoder "json" incorporado.
+       (No hay vía por syslog: su regla usaba un decoder propio que, si no estaba instalado,
+       hacía que el manager rechazara el fichero entero. Validado en el lab, ver README.) -->
   <rule id="100100" level="0">
     <decoded_as>json</decoded_as>
     <field name="eslabon.evento">\.+</field>
     <description>eslabon: evento de análisis de supply chain</description>
   </rule>
 
-  <rule id="100101" level="0">
-    <decoded_as>eslabon</decoded_as>
-    <field name="eslabon.evento">\.+</field>
-    <description>eslabon: evento de análisis de supply chain (vía syslog)</description>
-  </rule>
-
   <!-- Paquete malicioso confirmado por un aviso publicado o por el registro -->
   <rule id="100110" level="14">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^malicioso$</field>
     <description>eslabon: paquete MALICIOSO $(eslabon.ecosistema)/$(eslabon.paquete)@$(eslabon.paquete_version) ($(eslabon.id), fuentes: $(eslabon.fuentes))</description>
@@ -42,7 +36,7 @@
 
   <!-- Señales débiles correlacionadas: posible compromiso aún no confirmado -->
   <rule id="100120" level="10">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^sospechoso$</field>
     <field name="eslabon.severidad">^alta$|^critica$</field>
@@ -54,7 +48,7 @@
   </rule>
 
   <rule id="100121" level="7">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^sospechoso$</field>
     <field name="eslabon.severidad">^media$</field>
@@ -65,7 +59,7 @@
   </rule>
 
   <rule id="100122" level="3">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^sospechoso$</field>
     <field name="eslabon.severidad">^baja$|^info$</field>
@@ -74,7 +68,7 @@
 
   <!-- Repositorio de origen débil (compromiso antes de publicar) -->
   <rule id="100130" level="5">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^riesgo_origen$</field>
     <description>eslabon: riesgo en el repositorio de origen de $(eslabon.paquete)</description>
@@ -85,7 +79,7 @@
 
   <!-- Vulnerabilidades conocidas (CVE/GHSA/PYSEC) -->
   <rule id="100140" level="12">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^vuln$</field>
     <field name="eslabon.severidad">^critica$</field>
@@ -94,7 +88,7 @@
   </rule>
 
   <rule id="100141" level="8">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^vuln$</field>
     <field name="eslabon.severidad">^alta$</field>
@@ -103,7 +97,7 @@
   </rule>
 
   <rule id="100142" level="5">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^vuln$</field>
     <field name="eslabon.severidad">^media$</field>
@@ -112,7 +106,7 @@
   </rule>
 
   <rule id="100143" level="3">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^hallazgo$</field>
     <field name="eslabon.tipo">^vuln$</field>
     <field name="eslabon.severidad">^baja$|^info$</field>
@@ -122,14 +116,14 @@
 
   <!-- Visibilidad reducida: una fuente no se pudo consultar -->
   <rule id="100150" level="4">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^fuente_omitida$</field>
     <description>eslabon: fuente omitida $(eslabon.fuente): el escaneo tiene visibilidad reducida</description>
   </rule>
 
   <!-- Resumen del escaneo (sin alerta, sirve para auditoría y paneles) -->
   <rule id="100160" level="2">
-    <if_sid>100100, 100101</if_sid>
+    <if_sid>100100</if_sid>
     <field name="eslabon.evento">^resumen$</field>
     <description>eslabon: escaneo de $(eslabon.objetivo) completado</description>
   </rule>

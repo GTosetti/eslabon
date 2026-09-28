@@ -1,15 +1,13 @@
 # Integración con Wazuh
 
-> ⚠️ **ESTADO: NO VALIDADO CONTRA UN MANAGER.** El decoder y las reglas se escribieron siguiendo la
-> sintaxis documentada de Wazuh 4.x, y los tests de eslabon comprueban la estructura:
-> - el XML está bien formado;
-> - los IDs están en el rango 100100–100199 y no se repiten;
-> - los niveles van de 0 a 15;
-> - las técnicas MITRE tienen el formato correcto;
-> - cada evento de ejemplo cae en la regla esperada según las expresiones de los campos.
+> ✅ **ESTADO: VALIDADO CONTRA UN MANAGER REAL** (Wazuh **4.14.7**, laboratorio casero,
+> 2026-09-28). Las reglas se cargaron en el manager, la configuración validó OK y **las 11 reglas**
+> se probaron con logtest usando eventos generados por eslabon: 8 de escaneos reales y 3 construidos
+> con el mismo código de salida para cubrir las ramas restantes. Detalle y evidencia en
+> [`docs/validacion-wazuh.md`](../../docs/validacion-wazuh.md).
 >
-> **No se cargaron en un `wazuh-manager` real.** Esa validación se hace en el laboratorio (sección
-> "Validación pendiente") y **no debe darse por hecha**.
+> Falta la **ingesta continua**: un agente leyendo el fichero en el equipo donde corre eslabon (ver
+> "Pendiente" al final).
 
 ## Qué produce eslabon
 
@@ -64,28 +62,28 @@ eslabon scan C:\proyectos\app -f siem -o C:\eslabon\eventos.jsonl --anexar --fal
 ### 2. En el manager
 
 ```bash
-sudo cp eslabon_rules.xml    /var/ossec/etc/rules/
-sudo cp eslabon_decoders.xml /var/ossec/etc/decoders/   # solo si se usa el envío por syslog
-sudo chown wazuh:wazuh /var/ossec/etc/rules/eslabon_rules.xml /var/ossec/etc/decoders/eslabon_decoders.xml
+sudo cp eslabon_rules.xml /var/ossec/etc/rules/
+sudo chown wazuh:wazuh /var/ossec/etc/rules/eslabon_rules.xml
 sudo systemctl restart wazuh-manager
 ```
 
-### Dos formas de enviar los eventos, las mismas reglas
+### Cómo se decodifican los eventos
 
-- **Fichero con `log_format json`** (la recomendada). Wazuh aplica su decoder JSON incorporado
-  (`json`). La regla base **100100** exige `decoded_as json` y la presencia de `eslabon.evento`.
-- **Syslog con el programa `eslabon`**: `logger -t eslabon '<json>'`. Wazuh separa la cabecera
-  syslog y aplica el decoder `eslabon` de `eslabon_decoders.xml`. La regla base es la **100101**.
+El agente lee el fichero con `log_format json` y Wazuh aplica su decoder `json` incorporado. La regla
+base **100100** exige `decoded_as json` y la presencia de `eslabon.evento`. **No hace falta ningún
+decoder propio.**
 
-¿Por qué no un decoder propio también para el fichero? Wazuh prueba sus decoders incorporados antes
-que los locales, y el decoder `json` incorporado reconoce cualquier línea que empiece por `{`. Uno
-propio con la misma condición nunca llegaría a aplicarse.
+> Hasta la validación en el lab existía también una vía por syslog, con un decoder `eslabon` y una
+> regla base 100101. Se eliminó: la regla apuntaba a un decoder que había que instalar aparte, y sin
+> él el manager rechazaba el fichero **entero** con un engañoso *"XML syntax error"*. Un decoder
+> propio para el fichero tampoco serviría: el decoder `json` incorporado se aplica primero a toda
+> línea que empiece por `{`.
 
 ## Reglas (IDs 100100–100199)
 
 | ID | Nivel | Condición | MITRE |
 |---|---|---|---|
-| 100100 / 100101 | 0 | Base: cualquier evento de eslabon (fichero JSON / syslog) | — |
+| 100100 | 0 | Base: cualquier evento de eslabon (fichero JSON) | — |
 | 100110 | **14** | `tipo = malicioso` | T1195.001 |
 | 100120 | 10 | `tipo = sospechoso` y severidad alta/crítica | T1195.001 |
 | 100121 | 7 | `tipo = sospechoso` y severidad media | T1195.001 |
@@ -106,22 +104,22 @@ Por qué esos niveles:
 - La **fuente omitida** tiene nivel 4 porque un escaneo "limpio" sin todas sus fuentes no es un
   escaneo limpio, y el SOC tiene que saberlo.
 
-## Validación pendiente (en el laboratorio, en otra sesión)
+## Validación en el laboratorio (hecha)
 
-1. Copiar los ficheros al manager (sección 2) y comprobar que arranca sin errores:
-   `sudo /var/ossec/bin/wazuh-analysisd -t`
-2. Probar cada tipo de evento con `wazuh-logtest`, pegando líneas reales generadas con
-   `eslabon scan … -f siem`. Hay que confirmar tres cosas:
-   - que la fase 2 decodifica los campos `eslabon.*`;
-   - que la fase 3 dispara la regla esperada (tabla de arriba), con su nivel y su técnica MITRE;
-   - que `$(eslabon.paquete)` y el resto de variables se expanden en la descripción.
-3. Configurar el `localfile` en un agente, ejecutar un escaneo y ver las alertas en el dashboard
+1. ✅ Reglas cargadas en el manager (`/var/ossec/etc/rules/eslabon_rules.xml`), configuración
+   validada (`GET /manager/configuration/validation` → OK) y manager reiniciado.
+2. ✅ Logtest con eventos de eslabon: la fase 2 decodifica los campos `eslabon.*` (decoder `json`),
+   la fase 3 dispara la regla esperada con su nivel y su técnica MITRE, y `$(eslabon.paquete)` se
+   expande en la descripción.
+3. ⏳ Pendiente: `localfile` en un agente del equipo donde corre eslabon, y alertas en el dashboard
    (índice `wazuh-alerts-*`, `rule.groups: eslabon`).
-4. Registrar el resultado en `docs/bitacora.md`. Si algo no coincide, corregirlo aquí y quitar este
-   aviso de "no validado" solo cuando todo pase.
 
-Puntos a vigilar en esa validación (dudas concretas, no verificadas):
-- Si `<field>` con `^alta$|^critica$` funciona como se espera con OS_Regex. Si no, usar
-  `type="pcre2"`.
-- Cómo aparecen en el mensaje de alerta los campos de tipo lista (`fuentes`, `attack`).
-- Si hace falta `<options>no_full_log</options>` para no duplicar el JSON en la alerta.
+Dudas que quedaron resueltas:
+- **`^alta$|^critica$` funciona con OS_Regex**: el evento "sospechoso alta" disparó la 100120.
+- **Campos de tipo lista:** en la descripción aparecen como `["osv", "depsdev"]`.
+- **Números:** Wazuh convierte `confianza` a texto con 6 decimales (`0.850000`). Es estético.
+- **Error encontrado y corregido:** la antigua regla 100101 (vía syslog) usaba `decoded_as eslabon`,
+  un decoder que había que instalar aparte. Sin él, el manager rechazaba el fichero **entero** con un
+  engañoso *"XML syntax error"*, que ningún test local podía detectar. Se eliminó la vía por syslog.
+- Sin revisar todavía: si conviene `<options>no_full_log</options>` para no duplicar el JSON en la
+  alerta.

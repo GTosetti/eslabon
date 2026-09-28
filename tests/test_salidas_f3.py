@@ -171,8 +171,6 @@ def test_wazuh_xml_bien_formado_y_rango_de_ids():
             assert not padre or int(padre) in ids
         for tecnica in r.findall("mitre/id"):
             assert re.fullmatch(r"T\d{4}(\.\d{3})?", tecnica.text)
-    decoder = _xml("eslabon_decoders.xml").find("decoder")
-    assert decoder.get("name") == "eslabon"
 
 
 def _os_regex(patron: str, valor: str) -> bool:
@@ -225,7 +223,6 @@ def test_wazuh_cada_evento_dispara_la_regla_esperada(resultado):
     for e in _eventos(resultado):
         esperada = _esperada(e)
         assert _regla_que_dispara(e) == esperada
-        assert _regla_que_dispara(e, decoder="eslabon") == esperada  # vía syslog
         vistas.add(esperada)
     assert {100110, 100120, 100121, 100130, 100140, 100141, 100142, 100150, 100160} <= vistas
 

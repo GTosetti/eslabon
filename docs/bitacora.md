@@ -247,3 +247,37 @@
 - Si GuardDog no se encuentra, el mensaje explica que en Windows va por Docker, cómo definir
   `ESLABON_GUARDDOG` y cómo desactivarlo (`--guarddog-max 0`).
 - 3 tests nuevos. `pytest`: 184 pasan. `code-review`: sin errores.
+
+## F5: Laboratorio Wazuh (2026-09-28, en curso)
+
+**Qué se hizo**
+- Tutorial de uso de eslabon, paso a paso y en vivo. Destapó el problema de `ESLABON_GUARDDOG`
+  (solo vive en la ventana donde se define) y el mensaje de error confuso, que se corrigió
+  (commit aparte).
+- Acceso al dashboard del lab (`https://127.0.0.1:8443`) con **Playwright**. Se usó un Chromium
+  limpio en el que el usuario inició sesión él mismo; ni su perfil de Chrome ni sus contraseñas.
+- Reconocimiento de solo lectura: manager 4.14.7; el único agente es `WIN11-VICTIMA` (una VM); el
+  rango 100100–100199 está libre.
+- Con autorización: subida de `eslabon_rules.xml`, validación, reinicio del manager y logtest.
+
+**Qué demostró**
+- **Las 11 reglas validadas contra un manager real** con eventos de eslabon: decoder `json`, regla,
+  nivel y MITRE correctos. Detalle en `docs/validacion-wazuh.md`.
+
+**Qué falló y se corrigió**
+- El manager rechazó el fichero con un engañoso *"XML syntax error"*. Diagnóstico:
+  - el validador oficial de Wazuh, ejecutado localmente, lo daba por válido;
+  - un fichero mínimo pasaba;
+  - la bisección regla por regla señaló la 100101, que usaba `decoded_as eslabon`, un decoder no
+    instalado.
+
+  Se eliminó la vía por syslog. **Ningún test local podía detectar esto**: para eso existía la
+  validación en el lab.
+
+**Pendiente**
+- Ingesta continua: agente en este Windows. Faltan las redirecciones de VirtualBox para 1514 y 1515.
+
+**Conceptos clave**
+- `wazuh-logtest`/`PUT /logtest`: se prueba una regla con un evento sin generar alertas reales.
+- Un "error de sintaxis" puede ser en realidad una referencia rota. Diagnosticar por bisección, no
+  adivinando.
