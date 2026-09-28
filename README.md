@@ -129,4 +129,4 @@ suministro de software:
 eslabon normaliza y correlaciona esos resultados, explica por qué levanta cada hallazgo y los emite
 también como eventos JSON para un SIEM (Wazuh), con reglas Sigma y mapeo a MITRE ATT&CK T1195.
 **Nunca instala ni ejecuta los paquetes que analiza.** La documentación del proyecto está en
-[`docs/`](docs/), en español.
+[`docs/`](docs/), en español. Para empezar a usarlo: **[manual de usuario](docs/manual.md)**.

@@ -483,3 +483,10 @@ de paquetes legítimos desaparecieron.
 
 **Qué aprendiste:** que una señal distinga muy bien no significa que haya que subirle el peso. Si
 lo que busca es muy raro, sola sigue siendo un indicio y no una conclusión (tasa base).
+
+### Manual de usuario
+
+**Qué se hizo:** `docs/manual.md`, con instalación, primer escaneo, cómo leer los resultados, cómo
+decide eslabon, todas las opciones, códigos de salida, formatos, Wazuh, escaneo programado,
+solución de problemas (incluido NTP), variables de entorno y límites. Las opciones salen de
+`eslabon scan --help` y el ejemplo de la tabla, de un escaneo real. Enlazado desde el README.
