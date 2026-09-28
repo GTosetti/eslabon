@@ -329,3 +329,27 @@
   - event-stream@3.3.5 como sospechoso medio (100121, T1195.001).
 
   El agente siguió leyendo el fichero nuevo tras la rotación sin intervención.
+
+## F7: Pendientes (2026-09-28, en curso)
+
+### `--srcroot` para el SARIF
+
+**Qué se hizo**
+- Nueva opción `--srcroot <carpeta>`, solo con `-f sarif`. Define la raíz del repositorio a la que
+  se refieren las rutas del SARIF (`%SRCROOT%`). Por defecto sigue siendo el directorio actual.
+
+**Por qué**
+- GitHub Code Scanning ubica cada alerta en un fichero con una ruta relativa a la raíz del
+  repositorio. Si eslabon se ejecuta desde otra carpeta (una tarea programada, un pipeline que
+  escanea un subdirectorio), sin esta opción las rutas quedaban relativas a lo escaneado
+  (`package-lock.json` en vez de `services/api/package-lock.json`), y GitHub no encontraba el
+  fichero.
+
+**Qué demostró**
+- Escaneo real del proyecto demo desde fuera del repositorio con `--srcroot` en la raíz del repo:
+  28 resultados, con rutas `tests/fixtures/proyecto_demo/{requirements.txt,package-lock.json}`.
+- **Error encontrado en la prueba real:** la primera ejecución no aplicaba `--srcroot` cuando el
+  SARIF salía por pantalla, solo cuando iba a un fichero (`-o`). La sustitución automática de esa
+  línea no se había aplicado, y ningún test cubría la salida por pantalla. Se corrigió y se añadió
+  un test que cubre los dos caminos. Se comprobó que ese test falla con el código anterior.
+- `pytest`: 193 pasan.

@@ -101,6 +101,42 @@ def test_sarif_ubicacion_fisica_y_logica(resultado):
         "pkg:pypi/paquete-ficticio@1.0.0"
 
 
+def test_sarif_srcroot_cambia_la_raiz_de_las_rutas(resultado):
+    def uri(raiz):
+        run = sarif.construir(resultado, raiz)["runs"][0]
+        jinja = next(r for r in run["results"] if r["properties"]["purl"] == "pkg:pypi/jinja2@2.10")
+        return jinja["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+
+    # Con la raíz en el proyecto demo (p. ej. un repo escaneado desde fuera), la ruta es la
+    # que GitHub espera: relativa a ese repositorio.
+    assert uri(FIXTURES / "proyecto_demo") == "requirements.txt"
+    assert uri(RAIZ) == "tests/fixtures/proyecto_demo/requirements.txt"
+
+
+def test_cli_srcroot_solo_con_sarif(tmp_path):
+    from typer.testing import CliRunner
+
+    from eslabon import cli
+
+    r = CliRunner().invoke(cli.app, ["scan", "npm:x@1.0.0", "--srcroot", str(tmp_path)])
+    assert r.exit_code == 2 and "-f sarif" in r.output
+
+
+def test_cli_srcroot_por_pantalla_y_a_fichero(monkeypatch, resultado, tmp_path):
+    from typer.testing import CliRunner
+
+    from eslabon import cli
+
+    monkeypatch.setattr(cli, "escanear", lambda *a, **k: resultado)
+    comando = ["scan", "npm:x@1.0.0", "-f", "sarif", "--fallar-en", "nunca",
+               "--permitir-degradado", "--srcroot", str(FIXTURES / "proyecto_demo")]
+    pantalla = CliRunner().invoke(cli.app, comando)
+    fichero = CliRunner().invoke(cli.app, [*comando, "-o", str(tmp_path / "r.sarif")])
+    assert pantalla.exit_code == fichero.exit_code == 0
+    for texto in (pantalla.output, (tmp_path / "r.sarif").read_text(encoding="utf-8")):
+        assert '"uri": "requirements.txt"' in texto
+
+
 def test_huella_estable_e_independiente_de_la_ruta(resultado):
     otra_ruta = resultado.model_copy(update={"objetivo": "/otra/maquina/proyecto"})
     huellas = [[r["partialFingerprints"] for r in sarif.construir(x)["runs"][0]["results"]]

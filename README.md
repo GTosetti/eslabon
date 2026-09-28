@@ -68,6 +68,15 @@ Output formats: `-f tabla` (default), `json`, `sarif` (SARIF 2.1.0, for GitHub C
 `siem` (JSON Lines for Wazuh; see [`integrations/wazuh`](integrations/wazuh/README.md) and
 [`integrations/sigma`](integrations/sigma/README.md)).
 
+SARIF file paths are relative to the repository root (`%SRCROOT%`), which is where GitHub looks
+for them. By default that root is the current directory. If you run eslabon from somewhere
+else, pass the root explicitly:
+
+```bash
+eslabon scan repo/services/api -f sarif -o eslabon.sarif --srcroot repo
+# → locations like "services/api/package-lock.json"
+```
+
 Exit codes (safe for CI; it fails closed):
 
 | Code | Meaning |

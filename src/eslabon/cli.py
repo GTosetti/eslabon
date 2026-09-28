@@ -15,7 +15,7 @@ from eslabon.colectores.guarddog import MAX_PAQUETES_POR_DEFECTO
 from eslabon.ejecutor import TIMEOUT_POR_DEFECTO
 from eslabon.escaneo import escanear
 from eslabon.modelos import ResultadoScan, Severidad
-from eslabon.salidas import RENDERIZADORES, Formato, tabla
+from eslabon.salidas import RENDERIZADORES, Formato, sarif, tabla
 from eslabon.salidas.fichero import escribir
 from eslabon.sbom import interpretar_objetivo
 
@@ -69,6 +69,10 @@ def scan(
         min=0.001, help="Con --anexar: rotar el fichero si superaría este tamaño (MB)")] = None,
     conservar: Annotated[int, typer.Option(
         min=1, help="Con --rotar-mb: cuántas copias rotadas guardar (.1, .2, …)")] = 5,
+    srcroot: Annotated[Path | None, typer.Option(
+        exists=True, file_okay=False,
+        help="Con -f sarif: raíz del repositorio para las rutas (por defecto, el directorio "
+             "actual)")] = None,
 ) -> None:
     """Analiza las dependencias del objetivo y muestra los hallazgos.
 
@@ -80,16 +84,22 @@ def scan(
         entrada = interpretar_objetivo(objetivo)
         if rotar_mb and not (salida and anexar):
             raise ValueError("--rotar-mb solo tiene sentido con -o <fichero> y --anexar")
+        if srcroot and formato is not Formato.SARIF:
+            raise ValueError("--srcroot solo tiene sentido con -f sarif")
     except ValueError as exc:
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(code=SALIDA_USO) from exc
 
     resultado = escanear(entrada, colectores_por_defecto(guarddog_max), timeout=timeout)
+    if formato is Formato.SARIF:
+        texto = sarif.renderizar(resultado, raiz=srcroot)
+    else:
+        texto = RENDERIZADORES[formato](resultado)
 
     if salida:
         # UTF-8 sin BOM, escrito por eslabon: pasar la salida por una tubería de PowerShell
         # rompería los acentos y podría añadir un BOM al principio del fichero.
-        rotado = escribir(salida, RENDERIZADORES[formato](resultado), anexar=anexar,
+        rotado = escribir(salida, texto, anexar=anexar,
                           rotar_bytes=int(rotar_mb * 1024 * 1024) if rotar_mb else None,
                           conservar=conservar)
         if rotado:
@@ -97,7 +107,7 @@ def scan(
     elif formato is Formato.TABLA:
         tabla.mostrar(resultado)  # en la terminal, con colores
     else:
-        typer.echo(RENDERIZADORES[formato](resultado).rstrip("\n"))
+        typer.echo(texto.rstrip("\n"))
 
     raise typer.Exit(code=codigo_de_salida(resultado, fallar_en, permitir_degradado))
 

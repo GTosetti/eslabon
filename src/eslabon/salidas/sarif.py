@@ -15,10 +15,11 @@ Lo entienden GitHub Code Scanning, Azure DevOps y muchos IDEs. Decisiones:
   * compromiso → el paquete (el correlador deja un único hallazgo de compromiso por
     paquete, así que si pasa de sospechoso a malicioso, la alerta sube de nivel);
   * vulnerabilidad → el ID de la familia más estable (GHSA, luego PYSEC, luego CVE).
-- La "ubicación" es el manifiesto o lockfile donde se declaró el paquete, relativa al
-  directorio desde el que se ejecuta eslabon (normalmente la raíz del repositorio:
-  `%SRCROOT%`). Si no se puede expresar así (o el paquete vino por línea de comandos),
-  se usa una ubicación lógica con su purl.
+- La "ubicación" es el manifiesto o lockfile donde se declaró el paquete, relativa a la raíz
+  del repositorio (`%SRCROOT%`): la de `--srcroot` o, si no se indica, el directorio desde el
+  que se ejecuta eslabon. GitHub necesita esas rutas relativas a la raíz del repositorio para
+  mostrar la alerta sobre el fichero. Si no se puede expresar así (fuera de la raíz, o el
+  paquete vino por línea de comandos), se usa una ubicación lógica con su purl.
 """
 
 from __future__ import annotations
@@ -59,13 +60,14 @@ _DESCRIPCION_COMPROMISO = {
 _FAMILIAS_ESTABLES = ("GHSA-", "PYSEC-", "MAL-", "CVE-")
 
 
-def renderizar(resultado: ResultadoScan) -> str:
-    return json.dumps(construir(resultado), indent=2, ensure_ascii=False)
+def renderizar(resultado: ResultadoScan, raiz: Path | None = None) -> str:
+    return json.dumps(construir(resultado, raiz), indent=2, ensure_ascii=False)
 
 
-def construir(resultado: ResultadoScan) -> dict:
+def construir(resultado: ResultadoScan, raiz: Path | None = None) -> dict:
+    """`raiz`: la raíz del repositorio (`%SRCROOT%`); por defecto, el directorio actual."""
     ubicaciones = {p.clave: p for p in resultado.paquetes}
-    raiz = Path.cwd().resolve()
+    raiz = (raiz or Path.cwd()).resolve()
     base = _directorio_escaneado(resultado.objetivo)
     reglas: dict[str, dict] = {}
     indices: dict[str, int] = {}
