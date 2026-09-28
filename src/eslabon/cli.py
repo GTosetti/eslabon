@@ -23,6 +23,10 @@ app = typer.Typer(
     help="eslabon: el eslabón débil de tu cadena de suministro de software.",
     no_args_is_help=True,
     add_completion=False,
+    # Un error inesperado no debe volcar variables locales (p. ej. el entorno) en la terminal
+    # o en los logs de CI. Explícito, para no depender del valor por defecto de cada versión
+    # de typer (pyproject admite typer>=0.12).
+    pretty_exceptions_show_locals=False,
 )
 
 
@@ -54,7 +58,8 @@ def scan(
     formato: Annotated[Formato, typer.Option("--formato", "-f")] = Formato.TABLA,
     salida: Annotated[Path | None, typer.Option("--salida", "-o",
                                                 help="Fichero donde escribir el resultado")] = None,
-    timeout: Annotated[float, typer.Option(help="Segundos máximos por herramienta")] =
+    timeout: Annotated[float, typer.Option(
+        min=1, max=3600, help="Segundos máximos por herramienta")] =
         TIMEOUT_POR_DEFECTO,
     guarddog_max: Annotated[int, typer.Option(
         min=0, help="Máximo de paquetes que analiza GuardDog (0 = desactivado)")] =

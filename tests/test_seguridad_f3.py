@@ -160,6 +160,19 @@ def test_inventario_informa_descartados_y_no_soportados():
     assert "1 entradas descartadas" in avisos and "2 go-module" in avisos
 
 
+def test_inventario_informa_dependencias_sin_version():
+    # Revisión insecure-defaults (F1): un artefacto de Syft sin versión se omitía en silencio.
+    # (Syft 1.52 no emite "flask>=2" de un requirements.txt: lo omite él mismo, límite
+    # documentado en docs/revision-insecure-defaults.md. Esto cubre los catalogadores que sí
+    # lo emiten sin versión.)
+    doc = {"artifacts": [{"type": "python", "name": "flask", "version": ""},
+                         {"type": "python", "name": "requests", "version": "2.32.3"}]}
+    inventario = inventario_desde_syft(doc)
+    assert [p.nombre for p in inventario.paquetes] == ["requests"]
+    assert "1 dependencias sin versión fijada" in " ".join(inventario.avisos())
+    assert "'flask'" in " ".join(inventario.avisos())
+
+
 # --- M2: OSV que no analizó nada no es "limpio" --------------------------------------------
 def test_osv_sin_salida_es_fallo(ctx, monkeypatch):
     monkeypatch.setattr("eslabon.colectores.osv.ejecutar_json", lambda *a, **k: None)

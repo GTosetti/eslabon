@@ -42,6 +42,10 @@ class Inventario:
     # Artefactos de ecosistemas que eslabon todavía no analiza (Go, Maven...): cobertura
     # parcial, que también se informa.
     no_soportados: Counter[str] = field(default_factory=Counter)
+    # Artefactos sin versión concreta: sin versión no se pueden consultar avisos. Si se
+    # omitieran en silencio, el escaneo parecería completo sin haberlos mirado. (Ojo: Syft
+    # ni siquiera emite los requisitos sin fijar de un requirements.txt, como "flask>=2".)
+    sin_version: list[str] = field(default_factory=list)
 
     def avisos(self) -> list[str]:
         avisos = []
@@ -51,6 +55,9 @@ class Inventario:
         if self.no_soportados:
             detalle = ", ".join(f"{n} {t}" for t, n in self.no_soportados.most_common())
             avisos.append(f"artefactos de ecosistemas no soportados, sin analizar: {detalle}")
+        if self.sin_version:
+            avisos.append(f"{len(self.sin_version)} dependencias sin versión fijada, sin "
+                          f"analizar: {', '.join(self.sin_version[:3])}")
         return avisos
 
 
@@ -72,6 +79,7 @@ def inventario_desde_syft(documento: dict) -> Inventario:
     """
     descartados: list[str] = []
     no_soportados: Counter[str] = Counter()
+    sin_version: list[str] = []
     # En Syft, "A dependency-of B" se guarda como parent=A, child=B.
     son_dependencia = {r["parent"] for r in documento.get("artifactRelationships", [])
                        if r.get("type") == "dependency-of"}
@@ -81,7 +89,10 @@ def inventario_desde_syft(documento: dict) -> Inventario:
         if ecosistema is None:
             no_soportados[artefacto.get("type") or "desconocido"] += 1
             continue
-        if not artefacto.get("version") or _es_raiz_del_proyecto(artefacto, son_dependencia):
+        if _es_raiz_del_proyecto(artefacto, son_dependencia):
+            continue
+        if not artefacto.get("version"):
+            sin_version.append(repr(artefacto.get("name", ""))[:60])
             continue
         ubicaciones = [loc.get("path", "") for loc in artefacto.get("locations", [])]
         try:
@@ -94,7 +105,8 @@ def inventario_desde_syft(documento: dict) -> Inventario:
             vistos[paquete.clave].ubicaciones.extend(ubicaciones)
         else:
             vistos[paquete.clave] = paquete
-    return Inventario([vistos[clave] for clave in sorted(vistos)], descartados, no_soportados)
+    return Inventario([vistos[clave] for clave in sorted(vistos)], descartados, no_soportados,
+                      sin_version)
 
 
 def _es_raiz_del_proyecto(artefacto: dict, son_dependencia: set[str]) -> bool:

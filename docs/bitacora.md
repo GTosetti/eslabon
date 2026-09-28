@@ -353,3 +353,23 @@
   línea no se había aplicado, y ningún test cubría la salida por pantalla. Se corrigió y se añadió
   un test que cubre los dos caminos. Se comprobó que ese test falla con el código anterior.
 - `pytest`: 193 pasan.
+
+### Revisión manual de valores inseguros por defecto
+
+**Qué se hizo**
+- La auditoría `insecure-defaults:audit` volvió a fallar: el entorno rechaza el script del plugin
+  por los caracteres de control. Con el acuerdo del usuario, se hizo una revisión manual con las
+  seis referencias del plugin como lista de control. Detalle en `docs/revision-insecure-defaults.md`.
+
+**Qué demostró**
+- No hay hallazgos de gravedad alta.
+- Se corrigieron tres:
+  - F1: los artefactos sin versión ya no se omiten en silencio;
+  - F4: `--timeout` tiene límites;
+  - D1: los errores ya no pueden volcar variables locales.
+- **Verificación real de F1:** Syft 1.52 omite él mismo los requisitos sin fijar
+  (`flask>=2.0`), y su modo "adivinar" inventa una versión. Queda como límite documentado:
+  hay que escanear lockfiles.
+- F2, F3, P1, P2 y P3 quedan propuestos. P1 y P3 requieren probarlos antes en el lab o con
+  GuardDog.
+- `pytest`: 194 pasan.
