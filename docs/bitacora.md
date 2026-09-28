@@ -318,7 +318,10 @@
   plan B; y el BOM en el log), corregidos.
 
 **Pendiente**
-- Registrar la tarea en el Programador de tareas (requiere confirmación del usuario).
+- ~~Registrar la tarea en el Programador de tareas.~~ Hecho con la confirmación del usuario:
+  `eslabon\escaneo-diario`, a diario a las 09:00. La prueba con `schtasks /Run` tuvo resultado 0,
+  con 2 objetivos, y llegaron 29 alertas a Wazuh: 100140 ×1, 100141 ×10, 100142 ×17 y
+  100121 ×1 (event-stream).
 - ~~Confirmar en el dashboard las alertas posteriores a la rotación.~~ Hecho: 87 alertas en
   `wazuh-alerts-*` desde la rotación, todas del agente `HOST-ESLABON`, repartidas en tres escaneos:
   - 1 crítica (100140);
