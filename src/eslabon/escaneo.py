@@ -7,7 +7,7 @@ se anota en `fuentes_omitidas` y el escaneo sigue con las demás.
 from __future__ import annotations
 
 import tempfile
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -22,7 +22,10 @@ from eslabon.sbom import generar_sbom
 
 def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: float,
              depsdev: ClienteDepsDev | None = None,
-             npm: ClienteNpm | None = None) -> ResultadoScan:
+             npm: ClienteNpm | None = None,
+             requeridas: Collection[str] = ()) -> ResultadoScan:
+    """`requeridas`: fuentes que, además de las esenciales (OSV), tienen que funcionar para
+    que el análisis cuente como completo (p. ej. GuardDog, la única que mira el código)."""
     omitidas: list[FuenteOmitida] = []
     usadas: list[str] = []
     hallazgos: list[Finding] = []
@@ -77,6 +80,8 @@ def escanear(objetivo: Path | Paquete, colectores: Sequence[Colector], timeout: 
         hallazgos=hallazgos,
         fuentes_usadas=usadas,
         fuentes_omitidas=omitidas,
-        # Degradado: sin inventario, o sin la fuente de avisos publicados (OSV).
-        completo=bool(paquetes) and all(c.nombre in usadas for c in colectores if c.esencial),
+        # Degradado: sin inventario, o sin la fuente de avisos publicados (OSV) o alguna de
+        # las requeridas. Una fuente que analizó solo una parte cuenta como usada.
+        completo=bool(paquetes) and all(c.nombre in usadas for c in colectores
+                                        if c.esencial or c.nombre in requeridas),
     )

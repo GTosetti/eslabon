@@ -9,11 +9,15 @@
 > **Ingesta de punta a punta también verificada:** un agente en el equipo donde corre eslabon lee
 > `eventos.jsonl` (configuración centralizada del grupo `eslabon`), y las alertas llegan al índice
 > `wazuh-alerts-*` (30 alertas de un escaneo real).
+>
+> ⚠️ **Pendiente de validar en el lab (F8):** las reglas nuevas **100161** y **100170**, y el cambio
+> de la **100160** (ahora exige `completo = true`). Salieron de la revisión de valores inseguros
+> por defecto. Hoy solo están comprobadas con el simulador de los tests.
 
 ## Qué produce eslabon
 
 ```powershell
-eslabon scan C:\ruta\al\proyecto -f siem -o C:\eslabon\eventos.jsonl --anexar
+eslabon scan C:\ruta\al\proyecto -f siem -o C:\Users\<usuario>\eslabon\eventos.jsonl --anexar
 ```
 
 Genera un fichero **JSON Lines**: un evento JSON por línea, todos bajo la clave `eslabon`. Hay tres
@@ -44,16 +48,21 @@ Añadir a `ossec.conf` del agente (Windows: `C:\Program Files (x86)\ossec-agent\
 ```xml
 <localfile>
   <log_format>json</log_format>
-  <location>C:\eslabon\eventos.jsonl</location>
+  <location>C:\Users\<usuario>\eslabon\eventos.jsonl</location>
 </localfile>
 ```
+
+> **Dónde guardar el fichero.** Conviene una carpeta dentro del perfil del usuario que ejecuta
+> eslabon, no `C:\eslabon\`. Una carpeta creada en la raíz de `C:` hereda permisos de modificación
+> para "Usuarios autenticados": cualquier usuario local podría inyectar eventos falsos o borrar los
+> verdaderos. El agente de Wazuh corre como SYSTEM y lee el perfil sin problema.
 
 Reiniciar el agente. El agente lee las líneas **nuevas** que se añaden al fichero. Para que cada
 escaneo genere eventos nuevos, programar eslabon (con el Programador de tareas o con cron) con
 `--anexar`, que añade al final del fichero en lugar de sobrescribirlo:
 
 ```powershell
-eslabon scan C:\proyectos\app -f siem -o C:\eslabon\eventos.jsonl --anexar --fallar-en nunca
+eslabon scan C:\proyectos\app -f siem -o C:\Users\<usuario>\eslabon\eventos.jsonl --anexar --fallar-en nunca
 ```
 
 > No usar `eslabon ... | Add-Content`. En PowerShell 5.1 la tubería rompe los acentos, y
@@ -118,13 +127,18 @@ schtasks /Delete /TN "eslabon\escaneo-diario" /F    # quitarla
 | 100142 | 5 | `tipo = vuln` y severidad media | — |
 | 100143 | 3 | `tipo = vuln` y severidad baja/info | — |
 | 100150 | 4 | `evento = fuente_omitida` (visibilidad reducida) | — |
-| 100160 | 2 | `evento = resumen` | — |
+| 100160 | 2 | `evento = resumen` y `completo = true` | — |
+| 100161 | **6** | `evento = resumen` y `completo = false`: escaneo **incompleto** (código 3) ⚠️ | — |
+| 100170 | **7** | `evento = error_programado`: el escaneo programado no pudo ejecutarse ⚠️ | — |
 
 Por qué esos niveles:
 - **14 para malicioso.** Es un compromiso confirmado: quien instaló el paquete ejecutó código del
   atacante.
 - **12 para una CVE crítica.** Es grave, pero es un riesgo, no una intrusión.
 - **10 para sospechoso alto.** Hace falta investigar ya.
+- **Escaneo incompleto (6) y escaneo programado fallido (7):** son más altos que la fuente omitida,
+  porque ahí directamente no se miró. Cero hallazgos en un escaneo incompleto no significa limpio,
+  y un escaneo que no corrió no puede ser silencio.
 - La **fuente omitida** tiene nivel 4 porque un escaneo "limpio" sin todas sus fuentes no es un
   escaneo limpio, y el SOC tiene que saberlo.
 

@@ -8,7 +8,7 @@ from eslabon.modelos import ResultadoScan
 runner = CliRunner()
 
 
-def _resultado_vacio(objetivo, colectores, timeout):
+def _resultado_vacio(objetivo, colectores, timeout, requeridas=()):
     return ResultadoScan(objetivo=objetivo.purl, eslabon_version="0.1.0", paquetes=[], hallazgos=[],
                          fuentes_usadas=["osv"], fuentes_omitidas=[])
 

@@ -74,6 +74,9 @@ def scan(
         min=0.001, help="Con --anexar: rotar el fichero si superaría este tamaño (MB)")] = None,
     conservar: Annotated[int, typer.Option(
         min=1, help="Con --rotar-mb: cuántas copias rotadas guardar (.1, .2, …)")] = 5,
+    requerir: Annotated[list[str] | None, typer.Option(
+        help="Fuente que tiene que funcionar para que el análisis cuente como completo "
+             "(repetible): guarddog, depsdev, npm, scorecard. OSV siempre lo es")] = None,
     srcroot: Annotated[Path | None, typer.Option(
         exists=True, file_okay=False,
         help="Con -f sarif: raíz del repositorio para las rutas (por defecto, el directorio "
@@ -91,11 +94,16 @@ def scan(
             raise ValueError("--rotar-mb solo tiene sentido con -o <fichero> y --anexar")
         if srcroot and formato is not Formato.SARIF:
             raise ValueError("--srcroot solo tiene sentido con -f sarif")
+        colectores = colectores_por_defecto(guarddog_max)
+        disponibles = {c.nombre for c in colectores}
+        if desconocidas := set(requerir or ()) - disponibles:
+            raise ValueError(f"--requerir: fuente no disponible: {', '.join(sorted(desconocidas))}"
+                             f" (disponibles: {', '.join(sorted(disponibles))})")
     except ValueError as exc:
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(code=SALIDA_USO) from exc
 
-    resultado = escanear(entrada, colectores_por_defecto(guarddog_max), timeout=timeout)
+    resultado = escanear(entrada, colectores, timeout=timeout, requeridas=set(requerir or ()))
     if formato is Formato.SARIF:
         texto = sarif.renderizar(resultado, raiz=srcroot)
     else:

@@ -88,3 +88,31 @@ def test_motivos_redactados(monkeypatch, tmp_path):
     monkeypatch.setattr(escaneo, "generar_sbom", falla)
     resultado = escaneo.escanear(tmp_path, [], timeout=30)
     assert "token-super-secreto-99" not in resultado.fuentes_omitidas[0].motivo
+
+
+# --- Revisión insecure-defaults (F2): fuentes requeridas -----------------------------------
+class _ColectorCaido(Colector):
+    nombre = "guarddog"
+
+    def recolectar(self, paquetes, ctx):
+        raise HerramientaNoDisponible("Docker no responde")
+
+
+def test_fuente_no_esencial_caida_no_cambia_completo_salvo_si_se_requiere():
+    paquete = paquete_desde_texto("npm:lodash@4.17.15")
+    normal = escaneo.escanear(paquete, [_ColectorCaido()], timeout=30)
+    assert normal.completo is True  # por defecto: aviso de fuente omitida, nada más
+    exigido = escaneo.escanear(paquete, [_ColectorCaido()], timeout=30,
+                               requeridas={"guarddog"})
+    assert exigido.completo is False
+    assert exigido.fuentes_omitidas[0].fuente == "guarddog"
+
+
+def test_cli_requerir_fuente_desconocida_es_error_de_uso():
+    from typer.testing import CliRunner
+
+    from eslabon import cli
+
+    r = CliRunner().invoke(cli.app, ["scan", "npm:x@1.0.0", "--requerir", "guarddog",
+                                     "--guarddog-max", "0"])
+    assert r.exit_code == 2 and "guarddog" in r.output

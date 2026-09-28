@@ -399,3 +399,30 @@
 - **Límite honesto:** cors 2.8.6 (legítimo) sigue empatado con el ataque. Con metadatos son
   indistinguibles.
 - Nuevas grabaciones: event-stream 3.3.0 a 3.3.3, sin correos. `pytest`: 197 pasan.
+
+### Propuestos de la revisión: F2, F3, P2 y la prueba de P3
+
+**Qué se hizo**
+- **F2:** `--requerir <fuente>`. Si una fuente requerida falla, el análisis queda incompleto
+  (código 3).
+- **F3:** el escaneo programado escribe un evento `error_programado` cuando eslabon no pudo
+  ejecutarse. Se añadió `-Eventos`, para probar el script sin tocar el fichero que lee el agente.
+- Reglas Wazuh nuevas: **100161** (escaneo incompleto, nivel 6) y **100170** (escaneo programado
+  fallido, nivel 7). La **100160** ahora exige `completo = true`.
+- **P2:** el README deja de recomendar `C:\eslabon\` y explica por qué.
+
+**Qué demostró**
+- `--requerir guarddog` en vivo, con GuardDog no disponible: código 0 sin la opción y código 3 con
+  ella.
+- El script, con una lista inexistente y con un objetivo inválido, escribe su evento, y el
+  simulador lo asigna a la 100170.
+- **Error encontrado:** PowerShell 5.1 lee el `.ps1` como ANSI, así que "terminó" salía como
+  "terminÃ³". El texto del evento pasó a ASCII, igual que el resto de los eventos de eslabon.
+- **P3 probado:** GuardDog con `--cap-drop=ALL --security-opt no-new-privileges --memory 1g
+  --pids-limit 256` da el mismo resultado sobre `requests`. `--read-only` lo rompe, porque
+  GuardDog escribe su lista de paquetes populares dentro del contenedor.
+- `pytest`: 200 pasan.
+
+**Pendiente (F8, con confirmación del usuario)**
+- Cargar y validar en el manager del lab las reglas 100160, 100161 y 100170, y decidir P1.
+- Cambiar la variable de usuario `ESLABON_GUARDDOG` para incluir las opciones de P3.

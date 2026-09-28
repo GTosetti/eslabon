@@ -13,13 +13,17 @@
   - GuardDog usa la variable de usuario ESLABON_GUARDDOG. Si Docker no está abierto, eslabon lo
     informa como "fuente omitida" (alerta 100150 en Wazuh): el escaneo sigue con lo demás.
   - Cada ejecución deja una línea por objetivo en resultados\escaneo_programado.log.
+  - Si eslabon no pudo ejecutarse (falta el programa o la lista, error de uso, o se cayó),
+    el script añade él mismo un evento "error_programado" a eventos.jsonl (alerta 100170):
+    un fallo del escaneo no puede ser silencio en el SIEM.
 
   Código de salida: el más grave de todos los escaneos (0 bien, 3 = algún análisis incompleto).
   Los hallazgos NO hacen fallar la tarea (--fallar-en nunca): su destino es el SIEM.
 #>
 param(
     [string]$Objetivos = "",
-    [double]$RotarMb = 50
+    [double]$RotarMb = 50,
+    [string]$Eventos = ""  # por defecto resultados\eventos.jsonl (el que lee el agente)
 )
 
 $ErrorActionPreference = "Stop"
@@ -29,7 +33,7 @@ $raiz = Split-Path -Parent $PSScriptRoot
 Set-Location $raiz
 if (-not $Objetivos) { $Objetivos = Join-Path $raiz "resultados\objetivos.txt" }
 $eslabon = Join-Path $raiz ".venv\Scripts\eslabon.exe"
-$eventos = Join-Path $raiz "resultados\eventos.jsonl"
+$eventos = if ($Eventos) { $Eventos } else { Join-Path $raiz "resultados\eventos.jsonl" }
 $registro = Join-Path $raiz "resultados\escaneo_programado.log"
 
 function Registrar([string]$texto) {
@@ -39,8 +43,25 @@ function Registrar([string]$texto) {
     Write-Output $linea
 }
 
-if (-not (Test-Path $eslabon)) { Registrar "ERROR: no existe $eslabon"; exit 2 }
-if (-not (Test-Path $Objetivos)) { Registrar "ERROR: no existe la lista $Objetivos"; exit 2 }
+function EventoError([string]$objetivo, [int]$codigo, [string]$motivo) {
+    # Mismo formato que los eventos de eslabon: una línea JSON bajo la clave "eslabon".
+    $evento = @{ eslabon = [ordered]@{
+        evento = "error_programado"; fecha = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssK")
+        equipo = $env:COMPUTERNAME; objetivo = $objetivo; codigo = $codigo; motivo = $motivo
+    } } | ConvertTo-Json -Compress
+    [IO.File]::AppendAllText($eventos, $evento + "`n", (New-Object Text.UTF8Encoding($false)))
+}
+
+if (-not (Test-Path $eslabon)) {
+    Registrar "ERROR: no existe $eslabon"
+    EventoError "(todos)" 2 "no existe el ejecutable de eslabon"
+    exit 2
+}
+if (-not (Test-Path $Objetivos)) {
+    Registrar "ERROR: no existe la lista $Objetivos"
+    EventoError "(todos)" 2 "no existe la lista de objetivos"
+    exit 2
+}
 
 # Herramientas en el PATH de esta ejecución (la tarea programada no abre una terminal "normal").
 $extra = @(
@@ -62,6 +83,12 @@ foreach ($objetivo in $lista) {
     & $eslabon scan $objetivo -f siem -o $eventos --anexar --rotar-mb $RotarMb --fallar-en nunca
     $codigo = $LASTEXITCODE
     Registrar ("objetivo={0} codigo={1}" -f $objetivo, $codigo)
+    # Con --fallar-en nunca, lo normal es 0 (completo) o 3 (incompleto: eslabon ya lo informa
+    # con sus propios eventos). Cualquier otro código es que eslabon no terminó su trabajo.
+    if ($codigo -ne 0 -and $codigo -ne 3) {
+        # Texto ASCII: PowerShell 5.1 lee este .ps1 como ANSI y rompería los acentos.
+        EventoError $objetivo $codigo "eslabon termino con un codigo inesperado (ver escaneo_programado.log)"
+    }
     if ($codigo -gt $peor) { $peor = $codigo }
 }
 Registrar ("fin: {0} objetivos, peor codigo={1}" -f @($lista).Count, $peor)

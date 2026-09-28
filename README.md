@@ -68,6 +68,13 @@ Output formats: `-f tabla` (default), `json`, `sarif` (SARIF 2.1.0, for GitHub C
 `siem` (JSON Lines for Wazuh; see [`integrations/wazuh`](integrations/wazuh/README.md) and
 [`integrations/sigma`](integrations/sigma/README.md)).
 
+By default only OSV is essential: if another source fails (for example GuardDog with Docker
+stopped), the scan still exits 0 and reports the omitted source. To treat a source as mandatory:
+
+```bash
+eslabon scan . --requerir guarddog   # exit code 3 (incomplete) if GuardDog could not run
+```
+
 SARIF file paths are relative to the repository root (`%SRCROOT%`), which is where GitHub looks
 for them. By default that root is the current directory. If you run eslabon from somewhere
 else, pass the root explicitly:

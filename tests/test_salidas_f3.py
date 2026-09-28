@@ -218,7 +218,9 @@ def _os_regex(patron: str, valor: str) -> bool:
 
 
 def _regla_que_dispara(evento: dict, decoder: str = "json") -> int:
-    campos = {f"eslabon.{k}": str(v) for k, v in evento["eslabon"].items()}
+    # El decoder json de Wazuh deja los booleanos como "true"/"false" (no "True").
+    campos = {f"eslabon.{k}": json.dumps(v) if isinstance(v, bool) else str(v)
+              for k, v in evento["eslabon"].items()}
     reglas = _reglas()
 
     def cumple(regla):
@@ -248,7 +250,9 @@ _REGLA_ESPERADA = {
 def _esperada(e: dict) -> int:
     e = e["eslabon"]
     if e["evento"] != "hallazgo":
-        return {"fuente_omitida": 100150, "resumen": 100160}[e["evento"]]
+        if e["evento"] == "resumen":
+            return 100160 if e["completo"] else 100161
+        return {"fuente_omitida": 100150, "error_programado": 100170}[e["evento"]]
     if e["tipo"] == "riesgo_origen":
         return 100130
     return _REGLA_ESPERADA[(e["tipo"], e["severidad"])]
@@ -263,8 +267,21 @@ def test_wazuh_cada_evento_dispara_la_regla_esperada(resultado):
     assert {100110, 100120, 100121, 100130, 100140, 100141, 100142, 100150, 100160} <= vistas
 
 
+# Evento que escribe scripts/escaneo_programado.ps1 si eslabon no pudo ejecutarse.
+_ERROR_PROGRAMADO = {"eslabon": {"evento": "error_programado", "fecha": "2026-09-29T09:00:00-03:00",
+                                 "equipo": "pc-test", "objetivo": "C:/proyectos/app",
+                                 "codigo": 2, "motivo": "error de uso"}}
+
+
+def test_wazuh_escaneo_incompleto_y_error_programado(resultado):
+    incompleto = resultado.model_copy(update={"completo": False})
+    [resumen] = [e for e in _eventos(incompleto) if e["eslabon"]["evento"] == "resumen"]
+    assert _regla_que_dispara(resumen) == 100161
+    assert _regla_que_dispara(_ERROR_PROGRAMADO) == 100170
+
+
 def test_wazuh_variables_de_la_descripcion_existen(resultado):
-    campos = set()
+    campos = {f"eslabon.{k}" for k in _ERROR_PROGRAMADO["eslabon"]}
     for e in _eventos(resultado):
         campos |= {f"eslabon.{k}" for k in e["eslabon"]}
     for r in _reglas():

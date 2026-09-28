@@ -2,6 +2,8 @@
   eslabon: reglas de Wazuh (rango de IDs reservado: 100100-100199)
   ESTADO: VALIDADAS contra un wazuh-manager 4.14.7 real (lab, 2026-09-28): carga OK,
   configuración OK y las 11 reglas probadas con logtest. Ver docs/validacion-wazuh.md.
+  PENDIENTES de validar en el lab: 100161 y 100170 (nuevas) y el cambio de 100160 (exige
+  completo=true). Solo comprobadas con el simulador de los tests.
 
   Instalar en: /var/ossec/etc/rules/eslabon_rules.xml   (o añadir a local_rules.xml)
 
@@ -125,7 +127,25 @@
   <rule id="100160" level="2">
     <if_sid>100100</if_sid>
     <field name="eslabon.evento">^resumen$</field>
+    <field name="eslabon.completo">^true$</field>
     <description>eslabon: escaneo de $(eslabon.objetivo) completado</description>
+  </rule>
+
+  <!-- Escaneo INCOMPLETO: sin inventario, sin OSV o sin una fuente requerida (código 3).
+       Cero hallazgos aquí no es "limpio": hay que saber que no se miró. -->
+  <rule id="100161" level="6">
+    <if_sid>100100</if_sid>
+    <field name="eslabon.evento">^resumen$</field>
+    <field name="eslabon.completo">^false$</field>
+    <description>eslabon: escaneo INCOMPLETO de $(eslabon.objetivo) (fuentes omitidas: $(eslabon.fuentes_omitidas))</description>
+  </rule>
+
+  <!-- El escaneo programado no pudo ejecutarse (lo escribe scripts/escaneo_programado.ps1).
+       Sin este evento, un fallo del propio escaneo sería silencio en el SIEM. -->
+  <rule id="100170" level="7">
+    <if_sid>100100</if_sid>
+    <field name="eslabon.evento">^error_programado$</field>
+    <description>eslabon: el escaneo programado de $(eslabon.objetivo) falló (código $(eslabon.codigo)): $(eslabon.motivo)</description>
   </rule>
 
 </group>
