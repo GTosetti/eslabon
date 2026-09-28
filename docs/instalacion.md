@@ -186,8 +186,16 @@ Luego, para que eslabon use GuardDog dentro de Docker, **fijando la imagen por d
 docker pull ghcr.io/datadog/guarddog:v3.2.0
 docker image inspect ghcr.io/datadog/guarddog:v3.2.0 --format "{{json .RepoDigests}}"
 # -> ghcr.io/datadog/guarddog@sha256:5b0804d480e83405120fc90c62b60ad844310418c836e567055b1ba8843e033d
-$env:ESLABON_GUARDDOG = "docker run --rm ghcr.io/datadog/guarddog:v3.2.0@sha256:5b0804d480e83405120fc90c62b60ad844310418c836e567055b1ba8843e033d"
+$env:ESLABON_GUARDDOG = "docker run --rm --cap-drop=ALL --security-opt no-new-privileges --memory 1g --pids-limit 256 ghcr.io/datadog/guarddog:v3.2.0@sha256:5b0804d480e83405120fc90c62b60ad844310418c836e567055b1ba8843e033d"
 ```
+
+> **Contenedor endurecido** (revisión de valores inseguros por defecto, P3). GuardDog descomprime
+> paquetes potencialmente hostiles:
+> - `--cap-drop=ALL` y `no-new-privileges`: el contenedor no tiene privilegios del kernel;
+> - `--memory` y `--pids-limit`: una bomba de descompresión no tumba el equipo.
+>
+> Probado: el resultado sobre `requests` es idéntico (61 reglas, 0 errores). **No** usar
+> `--read-only`: GuardDog escribe su lista de paquetes populares dentro del contenedor y falla.
 
 > ⚠️ **Por qué el digest y no solo `:v3.2.0`.** Una etiqueta es un puntero que el dueño del registro
 > puede mover. El digest es el hash SHA256 del contenido: si alguien reemplazara la imagen, Docker se

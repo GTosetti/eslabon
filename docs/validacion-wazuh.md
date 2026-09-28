@@ -97,10 +97,43 @@ esperado: el umbral por defecto de Wazuh para guardar alertas es 3.
 
 ![Discover filtrado por rule.groups:eslabon: 30 alertas de HOST-ESLABON](img/wazuh-discover-eslabon.png)
 
+## F8: reglas de escaneo incompleto y de escaneo programado fallido
+
+Surgieron de la revisión de valores inseguros por defecto (`docs/revision-insecure-defaults.md`).
+Pasos, con autorización del usuario:
+1. **Validación local** con el validador XML oficial de Wazuh: OK.
+2. **En el manager:** subida de `eslabon_rules.xml` (sobrescribiendo), validación de la
+   configuración (OK) y reinicio. **Rollback preparado:** la versión anterior de las reglas quedó
+   guardada, lista para volver a subirla.
+3. **Logtest con eventos reales:**
+
+| Evento | Regla | Nivel |
+|---|---|---|
+| `resumen` con `completo = true` | 100160 | 2 |
+| `fuente_omitida` (GuardDog requerido y no disponible) | 100150 | 4 |
+| `resumen` con `completo = false` | **100161** | **6** |
+| `error_programado` (escrito por `escaneo_programado.ps1`) | **100170** | **7** |
+| Regresión: flatmap-stream malicioso | 100110 | 14 (T1195.001) |
+| Regresión: jinja2, vulnerabilidad alta | 100141 | 8 |
+| Regresión: event-stream 3.3.5, sospechoso medio | 100121 | 7 (T1195.001) |
+
+4. **Punta a punta:** se escribieron en `resultados/eventos.jsonl` los eventos de dos pruebas:
+   - un escaneo con `--requerir guarddog` y GuardDog no disponible (código 3);
+   - el script programado con un objetivo inválido (código 2).
+
+   En `wazuh-alerts-*` aparecieron **100161** y **100170** del agente `HOST-ESLABON`, junto con la
+   100150 y las vulnerabilidades del mismo escaneo.
+
+**Hallazgo operativo: los relojes del host y del manager están desfasados.** Los eventos se
+escribieron a las 21:27:14 (hora del Windows) y las alertas quedaron indexadas a las 21:27:00 (hora
+del manager): el manager va **al menos 14 s por detrás**. Una búsqueda "desde la hora en que escribí"
+no las encontraba. En un SOC, un reloj desfasado rompe la correlación temporal entre fuentes.
+Recomendación: sincronizar por NTP la VM del manager y el host.
+
 ## Pendiente
 
-- **Escaneo programado.** Una tarea del Programador de tareas que ejecute
-  `eslabon scan … -f siem -o …\resultados\eventos.jsonl --anexar --fallar-en nunca`, con
-  `ESLABON_GUARDDOG` definida como variable de usuario.
-- **Rotación de `eventos.jsonl`.** Con `--anexar` el fichero crece sin límite.
+- ~~Escaneo programado y rotación de `eventos.jsonl`~~: hechos en F6.
+- **P1:** limitar la regla base 100100 a eventos del fichero de eslabon (`<location>`) o del grupo
+  `eslabon`, para que otra fuente JSON no pueda generar alertas falsas de eslabon.
+- **NTP** en la VM del manager y en el host (ver el desfase de relojes en F8).
 - Evaluar `<options>no_full_log</options>` para no duplicar el JSON completo en cada alerta.

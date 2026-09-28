@@ -426,3 +426,32 @@
 **Pendiente (F8, con confirmación del usuario)**
 - Cargar y validar en el manager del lab las reglas 100160, 100161 y 100170, y decidir P1.
 - Cambiar la variable de usuario `ESLABON_GUARDDOG` para incluir las opciones de P3.
+
+## F8: validación en el lab y GuardDog endurecido (2026-09-28)
+
+**Qué se hizo** (con autorización del usuario)
+- `ESLABON_GUARDDOG` (variable de usuario) ahora incluye `--cap-drop=ALL --security-opt
+  no-new-privileges --memory 1g --pids-limit 256`. Comprobado con eslabon mismo: con
+  `--requerir guarddog`, GuardDog se usó y el análisis quedó completo.
+- Reglas subidas al manager, configuración validada y manager reiniciado. La versión anterior quedó
+  guardada para volver atrás.
+
+**Qué demostró**
+- **Logtest:** las 4 ramas nuevas o cambiadas disparan la regla esperada (100160, 100150, 100161 y
+  100170). La regresión sobre un malicioso (100110), una vulnerabilidad (100141) y event-stream
+  (100121) sigue bien, con sus técnicas MITRE.
+- **Punta a punta:** un escaneo incompleto real y un fallo real del script programado llegaron como
+  alertas 100161 (nivel 6) y 100170 (nivel 7) desde el agente `HOST-ESLABON`.
+
+**Qué falló**
+- La búsqueda de las alertas "no las encontraba". **Causa:** el reloj del manager va al menos 14 s
+  por detrás del Windows, y las alertas tenían una hora anterior al momento en que se escribieron
+  los eventos. No era un fallo de eslabon ni de las reglas. Queda recomendado NTP.
+- El script auxiliar de logtest cortaba las respuestas a 4000 caracteres. Se amplió el límite.
+- Al cerrar la fase, un script de edición falló otra vez por las barras invertidas de Git Bash, y
+  el commit salió incompleto. Se detectó revisando el contenido del commit y se corrigió.
+
+**Qué aprendiste**
+- En un SIEM, el tiempo es un dato más, y puede estar mal. Antes de concluir "no llegó", hay que
+  mirar más allá de la ventana de búsqueda y comprobar el camino entero: el colector del agente
+  contó las líneas y el índice tenía las alertas.

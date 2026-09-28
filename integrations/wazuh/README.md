@@ -10,9 +10,9 @@
 > `eventos.jsonl` (configuración centralizada del grupo `eslabon`), y las alertas llegan al índice
 > `wazuh-alerts-*` (30 alertas de un escaneo real).
 >
-> ⚠️ **Pendiente de validar en el lab (F8):** las reglas nuevas **100161** y **100170**, y el cambio
-> de la **100160** (ahora exige `completo = true`). Salieron de la revisión de valores inseguros
-> por defecto. Hoy solo están comprobadas con el simulador de los tests.
+> **F8, también validado en el manager:** las reglas **100161** (escaneo incompleto) y **100170**
+> (escaneo programado fallido), y el cambio de la **100160** (exige `completo = true`). Se
+> comprobaron con logtest y de punta a punta con el agente. Ver `docs/validacion-wazuh.md`.
 
 ## Qué produce eslabon
 
