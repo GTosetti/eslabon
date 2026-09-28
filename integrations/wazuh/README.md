@@ -80,6 +80,29 @@ decoder propio.**
 > propio para el fichero tampoco serviría: el decoder `json` incorporado se aplica primero a toda
 > línea que empiece por `{`.
 
+## Escaneo programado y rotación
+
+`scripts\escaneo_programado.ps1` escanea cada objetivo de `resultados\objetivos.txt` (hay un ejemplo
+en `scripts\objetivos.ejemplo.txt`) y añade los eventos a `resultados\eventos.jsonl` con
+`--anexar --rotar-mb 50 --fallar-en nunca`. Deja una línea por objetivo en
+`resultados\escaneo_programado.log`, y sale con el código más grave (3 si algún análisis quedó
+incompleto).
+
+- **Rotación.** Si el fichero superaría los 50 MB, pasa a `eventos.jsonl.1` (se conservan 5 copias)
+  y se empieza uno nuevo. Se comprobó en el lab que el agente de Wazuh permite renombrar el fichero
+  mientras lo lee. Si otro programa lo impidiera, eslabon copia y vacía el original ("copytruncate")
+  sin perder líneas.
+- **GuardDog** usa la variable de usuario `ESLABON_GUARDDOG`. Si Docker no está abierto, se informa
+  como fuente omitida (alerta 100150) y el resto del escaneo sigue.
+
+Registro en el Programador de tareas (a diario, a las 09:00, con el usuario actual):
+
+```powershell
+schtasks /Create /TN "eslabon\escaneo-diario" /SC DAILY /ST 09:00 /F /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"C:\Users\user1\Desktop\eslabon\scripts\escaneo_programado.ps1\""
+schtasks /Run /TN "eslabon\escaneo-diario"          # probarla ahora
+schtasks /Delete /TN "eslabon\escaneo-diario" /F    # quitarla
+```
+
 ## Reglas (IDs 100100–100199)
 
 | ID | Nivel | Condición | MITRE |
