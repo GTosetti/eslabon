@@ -1,0 +1,2954 @@
+[
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "lodash",
+  "version": "4.17.23"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "lodash",
+  "version": "4.18.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "lodash",
+  "version": "4.18.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "react",
+  "version": "19.1.9"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "react",
+  "version": "19.0.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "react",
+  "version": "19.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "react-dom",
+  "version": "19.1.9"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "react-dom",
+  "version": "19.0.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "react-dom",
+  "version": "19.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "express",
+  "version": "4.22.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "express",
+  "version": "4.22.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "express",
+  "version": "4.22.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "axios",
+  "version": "1.19.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "axios",
+  "version": "1.20.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "axios",
+  "version": "0.34.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "chalk",
+  "version": "5.6.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "chalk",
+  "version": "6.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "chalk",
+  "version": "6.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "debug",
+  "version": "4.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "debug",
+  "version": "4.4.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "debug",
+  "version": "4.4.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "commander",
+  "version": "14.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "commander",
+  "version": "14.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "commander",
+  "version": "15.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "moment",
+  "version": "2.30.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "moment",
+  "version": "2.30.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "moment",
+  "version": "2.31.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "dayjs",
+  "version": "1.11.21"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "dayjs",
+  "version": "1.11.22"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "dayjs",
+  "version": "1.11.23"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "uuid",
+  "version": "13.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "uuid",
+  "version": "14.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "uuid",
+  "version": "14.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "semver",
+  "version": "7.8.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "semver",
+  "version": "7.8.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "semver",
+  "version": "7.8.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "yargs",
+  "version": "17.7.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "yargs",
+  "version": "18.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "yargs",
+  "version": "18.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "glob",
+  "version": "13.0.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "glob",
+  "version": "13.0.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "glob",
+  "version": "13.0.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "rimraf",
+  "version": "6.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "rimraf",
+  "version": "6.1.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "rimraf",
+  "version": "6.1.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mkdirp",
+  "version": "2.1.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mkdirp",
+  "version": "3.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mkdirp",
+  "version": "3.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "minimist",
+  "version": "0.2.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "minimist",
+  "version": "1.2.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "minimist",
+  "version": "0.2.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "fs-extra",
+  "version": "11.3.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "fs-extra",
+  "version": "11.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "fs-extra",
+  "version": "11.4.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "body-parser",
+  "version": "2.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "body-parser",
+  "version": "1.20.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "body-parser",
+  "version": "1.20.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "cors",
+  "version": "2.8.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "cors",
+  "version": "2.8.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "cors",
+  "version": "2.8.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "dotenv",
+  "version": "18.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "dotenv",
+  "version": "18.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "dotenv",
+  "version": "18.0.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "jsonwebtoken",
+  "version": "9.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "jsonwebtoken",
+  "version": "9.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "jsonwebtoken",
+  "version": "9.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "bcryptjs",
+  "version": "3.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "bcryptjs",
+  "version": "3.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "bcryptjs",
+  "version": "3.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "typescript",
+  "version": "6.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "typescript",
+  "version": "6.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "typescript",
+  "version": "7.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "webpack",
+  "version": "5.110.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "webpack",
+  "version": "5.111.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "webpack",
+  "version": "5.111.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "eslint",
+  "version": "10.9.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "eslint",
+  "version": "10.10.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "eslint",
+  "version": "10.11.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "prettier",
+  "version": "3.9.7"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "prettier",
+  "version": "3.9.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "prettier",
+  "version": "3.9.9"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "jest",
+  "version": "30.5.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "jest",
+  "version": "30.5.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "jest",
+  "version": "30.5.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mocha",
+  "version": "12.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mocha",
+  "version": "12.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mocha",
+  "version": "12.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "vue",
+  "version": "3.5.41"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "vue",
+  "version": "3.5.42"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "vue",
+  "version": "3.5.43"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "next",
+  "version": "16.3.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "next",
+  "version": "16.3.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "next",
+  "version": "15.5.26"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "rxjs",
+  "version": "7.8.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "rxjs",
+  "version": "7.8.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "rxjs",
+  "version": "7.8.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "underscore",
+  "version": "1.13.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "underscore",
+  "version": "1.13.7"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "underscore",
+  "version": "1.13.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "async",
+  "version": "3.2.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "async",
+  "version": "3.2.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "async",
+  "version": "3.2.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "bluebird",
+  "version": "3.7.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "bluebird",
+  "version": "3.7.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "bluebird",
+  "version": "3.7.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "request",
+  "version": "2.87.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "request",
+  "version": "2.88.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "request",
+  "version": "2.88.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "ws",
+  "version": "8.21.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "ws",
+  "version": "8.21.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "ws",
+  "version": "8.22.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "socket.io",
+  "version": "4.8.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "socket.io",
+  "version": "4.8.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "socket.io",
+  "version": "4.8.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mongoose",
+  "version": "9.10.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mongoose",
+  "version": "9.10.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mongoose",
+  "version": "9.10.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "redis",
+  "version": "6.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "redis",
+  "version": "6.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "redis",
+  "version": "6.2.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "pg",
+  "version": "8.21.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "pg",
+  "version": "8.22.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "pg",
+  "version": "8.23.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mysql2",
+  "version": "3.24.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mysql2",
+  "version": "3.24.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "mysql2",
+  "version": "3.24.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "sequelize",
+  "version": "6.37.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "sequelize",
+  "version": "6.37.7"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "sequelize",
+  "version": "6.37.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "cheerio",
+  "version": "1.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "cheerio",
+  "version": "1.1.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "cheerio",
+  "version": "1.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "node-fetch",
+  "version": "3.3.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "node-fetch",
+  "version": "2.6.13"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "node-fetch",
+  "version": "2.7.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "qs",
+  "version": "6.15.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "qs",
+  "version": "6.15.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "qs",
+  "version": "6.16.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "classnames",
+  "version": "2.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "classnames",
+  "version": "2.5.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "classnames",
+  "version": "2.5.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "prop-types",
+  "version": "15.7.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "prop-types",
+  "version": "15.8.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "prop-types",
+  "version": "15.8.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "tslib",
+  "version": "2.7.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "tslib",
+  "version": "2.8.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "tslib",
+  "version": "2.8.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "date-fns",
+  "version": "4.2.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "date-fns",
+  "version": "4.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "npm",
+  "nombre": "date-fns",
+  "version": "4.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "requests",
+  "version": "2.34.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "requests",
+  "version": "2.34.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "requests",
+  "version": "2.34.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "urllib3",
+  "version": "2.6.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "urllib3",
+  "version": "2.7.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "urllib3",
+  "version": "2.8.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "certifi",
+  "version": "2026.5.20"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "certifi",
+  "version": "2026.6.17"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "certifi",
+  "version": "2026.7.22"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "idna",
+  "version": "3.18.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "idna",
+  "version": "3.19.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "idna",
+  "version": "3.20.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "charset-normalizer",
+  "version": "3.4.9"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "charset-normalizer",
+  "version": "3.5.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "charset-normalizer",
+  "version": "3.5.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "numpy",
+  "version": "2.5.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "numpy",
+  "version": "2.5.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "numpy",
+  "version": "2.5.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pandas",
+  "version": "3.0.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pandas",
+  "version": "3.0.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pandas",
+  "version": "3.0.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "boto3",
+  "version": "1.43.102"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "boto3",
+  "version": "1.43.103"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "boto3",
+  "version": "1.43.104"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "botocore",
+  "version": "1.43.102"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "botocore",
+  "version": "1.43.103"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "botocore",
+  "version": "1.43.104"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "setuptools",
+  "version": "82.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "setuptools",
+  "version": "83.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "setuptools",
+  "version": "84.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "six",
+  "version": "1.15.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "six",
+  "version": "1.16.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "six",
+  "version": "1.17.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "python-dateutil",
+  "version": "2.8.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "python-dateutil",
+  "version": "2.8.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "python-dateutil",
+  "version": "2.9.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pyyaml",
+  "version": "6.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pyyaml",
+  "version": "6.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pyyaml",
+  "version": "6.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "packaging",
+  "version": "26.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "packaging",
+  "version": "26.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "packaging",
+  "version": "26.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "typing-extensions",
+  "version": "4.14.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "typing-extensions",
+  "version": "4.15.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "typing-extensions",
+  "version": "4.16.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "jinja2",
+  "version": "3.1.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "jinja2",
+  "version": "3.1.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "jinja2",
+  "version": "3.1.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "markupsafe",
+  "version": "3.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "markupsafe",
+  "version": "3.0.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "markupsafe",
+  "version": "3.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "click",
+  "version": "8.4.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "click",
+  "version": "8.4.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "click",
+  "version": "8.5.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "flask",
+  "version": "3.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "flask",
+  "version": "3.1.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "flask",
+  "version": "3.1.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "django",
+  "version": "5.2.17"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "django",
+  "version": "6.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "django",
+  "version": "6.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "sqlalchemy",
+  "version": "2.0.54"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "sqlalchemy",
+  "version": "2.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "sqlalchemy",
+  "version": "2.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pydantic",
+  "version": "2.13.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pydantic",
+  "version": "2.13.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pydantic",
+  "version": "2.13.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "attrs",
+  "version": "25.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "attrs",
+  "version": "25.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "attrs",
+  "version": "26.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cryptography",
+  "version": "49.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cryptography",
+  "version": "50.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cryptography",
+  "version": "50.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cffi",
+  "version": "2.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cffi",
+  "version": "2.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cffi",
+  "version": "2.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pycparser",
+  "version": "2.22.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pycparser",
+  "version": "2.23.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pycparser",
+  "version": "3.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pytest",
+  "version": "9.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pytest",
+  "version": "9.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pytest",
+  "version": "9.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pluggy",
+  "version": "1.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pluggy",
+  "version": "1.5.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pluggy",
+  "version": "1.6.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "wheel",
+  "version": "0.46.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "wheel",
+  "version": "0.47.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "wheel",
+  "version": "0.48.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pip",
+  "version": "26.1.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pip",
+  "version": "26.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pip",
+  "version": "26.2.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "rsa",
+  "version": "4.8.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "rsa",
+  "version": "4.9.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "rsa",
+  "version": "4.9.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pyasn1",
+  "version": "0.6.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pyasn1",
+  "version": "0.6.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pyasn1",
+  "version": "0.6.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "jmespath",
+  "version": "1.0.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "jmespath",
+  "version": "1.0.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "jmespath",
+  "version": "1.1.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "s3transfer",
+  "version": "0.19.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "s3transfer",
+  "version": "0.19.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "s3transfer",
+  "version": "0.19.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "protobuf",
+  "version": "7.36.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "protobuf",
+  "version": "7.36.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "protobuf",
+  "version": "7.36.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "grpcio",
+  "version": "1.82.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "grpcio",
+  "version": "1.83.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "grpcio",
+  "version": "1.84.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "google-auth",
+  "version": "2.57.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "google-auth",
+  "version": "2.58.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "google-auth",
+  "version": "2.58.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cachetools",
+  "version": "7.1.7"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cachetools",
+  "version": "7.1.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "cachetools",
+  "version": "7.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "tomli",
+  "version": "2.4.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "tomli",
+  "version": "2.4.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "tomli",
+  "version": "2.3.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "filelock",
+  "version": "4.0.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "filelock",
+  "version": "4.0.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "filelock",
+  "version": "4.0.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "platformdirs",
+  "version": "4.11.15"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "platformdirs",
+  "version": "4.12.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "platformdirs",
+  "version": "4.12.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "virtualenv",
+  "version": "21.12.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "virtualenv",
+  "version": "21.12.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "virtualenv",
+  "version": "21.13.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "colorama",
+  "version": "0.4.4"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "colorama",
+  "version": "0.4.5"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "colorama",
+  "version": "0.4.6"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "tqdm",
+  "version": "4.69.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "tqdm",
+  "version": "4.70.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "tqdm",
+  "version": "4.70.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pillow",
+  "version": "12.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pillow",
+  "version": "12.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "pillow",
+  "version": "12.3.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "scipy",
+  "version": "1.17.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "scipy",
+  "version": "1.18.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "scipy",
+  "version": "1.18.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "matplotlib",
+  "version": "3.11.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "matplotlib",
+  "version": "3.11.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "matplotlib",
+  "version": "3.11.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "lxml",
+  "version": "6.1.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "lxml",
+  "version": "6.1.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "lxml",
+  "version": "6.1.3"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "psutil",
+  "version": "7.2.0"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "psutil",
+  "version": "7.2.1"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "psutil",
+  "version": "7.2.2"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "werkzeug",
+  "version": "3.1.7"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "werkzeug",
+  "version": "3.1.8"
+ },
+ {
+  "grupo": "legitimo",
+  "ecosistema": "PyPI",
+  "nombre": "werkzeug",
+  "version": "3.1.9"
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "event-stream",
+  "version": "3.3.6",
+  "avisos": [
+   "GHSA-mh6f-8j2x-4483"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "ua-parser-js",
+  "version": "0.7.29",
+  "avisos": [
+   "GHSA-pjwm-rvh2-c87w"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "ua-parser-js",
+  "version": "0.8.0",
+  "avisos": [
+   "GHSA-pjwm-rvh2-c87w"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "ua-parser-js",
+  "version": "1.0.0",
+  "avisos": [
+   "GHSA-pjwm-rvh2-c87w"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "coa",
+  "version": "2.0.3",
+  "avisos": [
+   "GHSA-73qr-pfmq-6rp8"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "rc",
+  "version": "1.2.9",
+  "avisos": [
+   "GHSA-g2q5-5433-rhrf"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "eslint-scope",
+  "version": "3.7.2",
+  "avisos": [
+   "GHSA-hxxf-q3w9-4xgw"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "chalk",
+  "version": "5.6.1",
+  "avisos": [
+   "MAL-2025-46969"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "debug",
+  "version": "4.4.2",
+  "avisos": [
+   "GHSA-4x49-vf9v-38px",
+   "MAL-2025-46974"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "ansi-styles",
+  "version": "6.2.2",
+  "avisos": [
+   "MAL-2025-46967"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "strip-ansi",
+  "version": "7.1.1",
+  "avisos": [
+   "MAL-2025-46980"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "ansi-regex",
+  "version": "6.2.1",
+  "avisos": [
+   "MAL-2025-46966"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "supports-color",
+  "version": "10.2.1",
+  "avisos": [
+   "MAL-2025-46981"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "wrap-ansi",
+  "version": "9.0.1",
+  "avisos": [
+   "MAL-2025-46983"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "color-convert",
+  "version": "3.1.1",
+  "avisos": [
+   "GHSA-pxx3-g568-hxr4",
+   "MAL-2025-46971"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "nx",
+  "version": "21.5.0",
+  "avisos": [
+   "MAL-2025-41443"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "nx",
+  "version": "20.9.0",
+  "avisos": [
+   "MAL-2025-41443"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "@ctrl/tinycolor",
+  "version": "4.1.1",
+  "avisos": [
+   "MAL-2025-47141"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "eslint-config-prettier",
+  "version": "8.10.1",
+  "avisos": [
+   "GHSA-f29h-pxvx-f335",
+   "MAL-2025-6022"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "is",
+  "version": "3.3.1",
+  "avisos": [
+   "MAL-2025-6020"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "@solana/web3.js",
+  "version": "1.95.6",
+  "avisos": [
+   "MAL-2024-11183"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "xrpl",
+  "version": "4.2.1",
+  "avisos": [
+   "GHSA-33qr-m49q-rxfx"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "node-ipc",
+  "version": "10.1.1",
+  "avisos": [
+   "GHSA-97m3-w2cp-4xx6"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "PyPI",
+  "nombre": "num2words",
+  "version": "0.5.15",
+  "avisos": [
+   "GHSA-jxr6-qrxx-2ph2",
+   "MAL-2025-6794"
+  ],
+  "caso_vivo": false
+ },
+ {
+  "grupo": "comprometido",
+  "ecosistema": "npm",
+  "nombre": "event-stream",
+  "version": "3.3.5",
+  "avisos": [],
+  "caso_vivo": true
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "com.unity.dots.runtime",
+  "version": "10.0.1",
+  "avisos": [
+   "MAL-2025-47627"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "df-vision",
+  "version": "1.1.79",
+  "avisos": [
+   "MAL-2026-6834"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "bnpl-blocks-mobile-bnpl-info-slider",
+  "version": "35.8.4",
+  "avisos": [
+   "MAL-2026-12995"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "gclassroom",
+  "version": "1.1.1",
+  "avisos": [
+   "MAL-2026-15574"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "dcplot",
+  "version": "99.99.99",
+  "avisos": [
+   "MAL-2024-1082"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "ccfedrtest-poc",
+  "version": "1.0.3",
+  "avisos": [
+   "MAL-2023-8042"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "fatfingers-hahayeet3333",
+  "version": "1.0.1",
+  "avisos": [
+   "MAL-2025-3245"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "chai-as-hashed",
+  "version": "2.3.4",
+  "avisos": [
+   "MAL-2026-564"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "expo-audio-session",
+  "version": "0.2.1",
+  "avisos": [
+   "MAL-2025-190842"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "delivery-ci-validate-tinkoff-fb",
+  "version": "35.6.9",
+  "avisos": [
+   "MAL-2026-12689"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "3layerdipstackc6c5kn",
+  "version": "0.1.4",
+  "avisos": [
+   "MAL-2026-14702"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "cloud-pipeline-run",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2025-4168"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "gs-payments",
+  "version": "33.12.12",
+  "avisos": [
+   "MAL-2025-4744"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "hope-mapboxdraw",
+  "version": "0.1.1",
+  "avisos": [
+   "MAL-2025-190963"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "kikos",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-7453"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "bitmart-production",
+  "version": "19.4.9",
+  "avisos": [
+   "MAL-2025-1327"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "create-kumo-project",
+  "version": "22.0.0",
+  "avisos": [
+   "MAL-2026-11024"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "lightspark-js",
+  "version": "99.9.9",
+  "avisos": [
+   "MAL-2026-3021"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "abuden2",
+  "version": "2.0.0",
+  "avisos": [
+   "MAL-2026-10252"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "jsdevtools",
+  "version": "213.21.25",
+  "avisos": [
+   "MAL-2024-9677"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "disputeapiserv-paypal",
+  "version": "19.0.2",
+  "avisos": [
+   "MAL-2025-3096"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "globalize-rpk",
+  "version": "1.7.4",
+  "avisos": [
+   "MAL-2025-47315"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "ing-feat-pis-single-payments",
+  "version": "99.99.99",
+  "avisos": [
+   "MAL-2025-192936"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "blank-pkg",
+  "version": "10.0.1",
+  "avisos": [
+   "MAL-2025-6262"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "core-js-gns",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2026-14175"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "heaveho",
+  "version": "15.7.4",
+  "avisos": [
+   "MAL-2025-4088"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "fibo-num",
+  "version": "10.1.0",
+  "avisos": [
+   "MAL-2023-8627"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "egs-trusted-domains",
+  "version": "99.2.1",
+  "avisos": [
+   "MAL-2024-2286"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "crypto-addr-codec",
+  "version": "0.1.9",
+  "avisos": [
+   "MAL-2025-190694"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "dev.voltstro.unitywebbrowser",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2025-4333"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "leocare-new",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-1588"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "eslint-module-conf",
+  "version": "2.7.5",
+  "avisos": [
+   "MAL-2024-8845"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "dolyame-ui-styles",
+  "version": "35.1.4",
+  "avisos": [
+   "MAL-2026-13187"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "jz-user-js-bridge",
+  "version": "999.0.0",
+  "avisos": [
+   "MAL-2025-192819"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "jhsdfgghsdfjhds",
+  "version": "1.0.7",
+  "avisos": [
+   "MAL-2024-1346"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "2.7m-views-in-boots-the-last-wish-2023-full-online-free-on-streaming-at-home",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-1698"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "audi-footnote-reference-service",
+  "version": "3.7.4",
+  "avisos": [
+   "MAL-2025-47052"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "ac-dom-nodes",
+  "version": "99.9.9",
+  "avisos": [
+   "MAL-2026-778"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "am-alerter",
+  "version": "1.0.1",
+  "avisos": [
+   "MAL-2024-1747"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "dropbox-connect",
+  "version": "999.9.9",
+  "avisos": [
+   "MAL-2025-435"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "bitrue-main",
+  "version": "19.4.9",
+  "avisos": [
+   "MAL-2025-2849"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "financialforce",
+  "version": "3.1.1",
+  "avisos": [
+   "MAL-2024-2369"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "accounts-offers",
+  "version": "0.0.1",
+  "avisos": [
+   "MAL-2026-12135"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "bx-ui-view",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2026-16064"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "directus-codestyle",
+  "version": "1.3.1",
+  "avisos": [
+   "MAL-2023-1154"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "hd-base",
+  "version": "99.0.2",
+  "avisos": [
+   "MAL-2025-20"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "framerate-interaction-permissions",
+  "version": "2.0.0",
+  "avisos": [
+   "MAL-2026-6163"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "knowledge-grader",
+  "version": "1.0.2",
+  "avisos": [
+   "MAL-2026-12795"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "elf-stats-fuzzy-ribbon-205",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2025-192769"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "npm",
+  "nombre": "anguldrjs",
+  "version": "8.7.6",
+  "avisos": [
+   "MAL-2026-7165"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "deepface-weight",
+  "version": "0.1.4",
+  "avisos": [
+   "MAL-2026-14158"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "someeebbb",
+  "version": "10.0.5",
+  "avisos": [
+   "MAL-2025-41764"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "robloxrequestsss",
+  "version": "0.1",
+  "avisos": [
+   "MAL-2024-11698"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "pyfiglets",
+  "version": "0.0.1",
+  "avisos": [
+   "MAL-2025-5124"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "asdk-plugin-alphagen",
+  "version": "9999.0.0",
+  "avisos": [
+   "MAL-2026-11422"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "lakeflow-community-connectors",
+  "version": "0.1.0",
+  "avisos": [
+   "MAL-2026-2310"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "dexat2",
+  "version": "2",
+  "avisos": [
+   "MAL-2025-918"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "namedpkg",
+  "version": "1.0",
+  "avisos": [
+   "MAL-2025-41704"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "reqquest",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-5871"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "aeodatav04",
+  "version": "0.4",
+  "avisos": [
+   "MAL-2024-4742"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "graphcore-cloud-tools",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-10032"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "timecurrently",
+  "version": "0.1.0",
+  "avisos": [
+   "MAL-2026-3198"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "argspython",
+  "version": "12.6.5",
+  "avisos": [
+   "MAL-2024-4776"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "efghr-honeybee-sdk",
+  "version": "0.2.0",
+  "avisos": [
+   "MAL-2026-2005"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "tronlinkpy",
+  "version": "0.0.1",
+  "avisos": [
+   "MAL-2025-1999"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "shadow-scraper",
+  "version": "1",
+  "avisos": [
+   "MAL-2024-5999"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "nigpal",
+  "version": "0.1",
+  "avisos": [
+   "MAL-2024-5410"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "macaqua",
+  "version": "99.7",
+  "avisos": [
+   "MAL-2024-10417"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "strands-agents-anthropic",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2026-904"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "pipcryptoaddonv1",
+  "version": "1.1.0",
+  "avisos": [
+   "MAL-2024-5513"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "demozecosse",
+  "version": "2.0.1",
+  "avisos": [
+   "MAL-2026-1286"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "bussardweg4av3",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-9956"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "cryptob",
+  "version": "2.6.2",
+  "avisos": [
+   "MAL-2025-6488"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "smartsheet",
+  "version": "3.1.0",
+  "avisos": [
+   "MAL-2025-41761"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "awesome-tools-collection",
+  "version": "0.1.6",
+  "avisos": [
+   "MAL-2025-47746"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "megai",
+  "version": "92.6",
+  "avisos": [
+   "MAL-2024-10593"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "afritonpy",
+  "version": "1",
+  "avisos": [
+   "MAL-2024-11516"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "coloreq3",
+  "version": "0.0.0",
+  "avisos": [
+   "MAL-2024-4958"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "dscripting",
+  "version": "0.1.4",
+  "avisos": [
+   "MAL-2024-5096"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "bulktweetbyref",
+  "version": "0.1.0",
+  "avisos": [
+   "MAL-2025-6470"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "hellopythopy",
+  "version": "0.9.0",
+  "avisos": [
+   "MAL-2024-11606"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "ritch",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2026-869"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "xboxredeemer",
+  "version": "1.0",
+  "avisos": [
+   "MAL-2024-6220"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "python-tg-bot",
+  "version": "22.5.1",
+  "avisos": [
+   "MAL-2025-192365"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "uwjimvosfdrlbvn",
+  "version": "0.0.0",
+  "avisos": [
+   "MAL-2024-6191"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "genui",
+  "version": "0.0.1",
+  "avisos": [
+   "MAL-2024-5174"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "importlib-metadate",
+  "version": "99.99",
+  "avisos": [
+   "MAL-2024-1624"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "loggutils",
+  "version": "0.1.0",
+  "avisos": [
+   "MAL-2025-6539"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "pipcolortoolkit",
+  "version": "1.0.0",
+  "avisos": [
+   "MAL-2024-5497"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "fastybird-devices-module",
+  "version": "0.0.1",
+  "avisos": [
+   "MAL-2025-6502"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "yc-as-client",
+  "version": "11.11.3",
+  "avisos": [
+   "MAL-2023-1422"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "xoloyuaezcqixu",
+  "version": "0.0.0",
+  "avisos": [
+   "MAL-2025-41799"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "synago",
+  "version": "0.1.2",
+  "avisos": [
+   "MAL-2026-5284"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "spy-ai",
+  "version": "1.1.3",
+  "avisos": [
+   "MAL-2024-12351"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "pandas-numpy",
+  "version": "8.19.3",
+  "avisos": [
+   "MAL-2023-1385"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "bananaholder",
+  "version": "0.0.110",
+  "avisos": [
+   "MAL-2024-12213"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "timemcp-py",
+  "version": "0.1.0",
+  "avisos": [
+   "MAL-2026-3134"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "facebookresearch",
+  "version": "99.0.0",
+  "avisos": [
+   "MAL-2026-2175"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "randomuseragent",
+  "version": "0.1.1",
+  "avisos": [
+   "MAL-2025-1987"
+  ]
+ },
+ {
+  "grupo": "malicioso",
+  "ecosistema": "PyPI",
+  "nombre": "binance-sdk-ebate",
+  "version": "10.0.0",
+  "avisos": [
+   "MAL-2025-47747"
+  ]
+ }
+]

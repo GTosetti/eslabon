@@ -373,3 +373,29 @@
 - F2, F3, P1, P2 y P3 quedan propuestos. P1 y P3 requieren probarlos antes en el lab o con
   GuardDog.
 - `pytest`: 194 pasan.
+
+### Calibración de las señales
+
+**Qué se hizo**
+- Corpus de 425 paquetes, medido con los colectores reales y solo metadatos (sin GuardDog, porque
+  hay malware en el corpus):
+  - 300 versiones legítimas populares;
+  - 25 versiones comprometidas confirmadas por OSV;
+  - 100 maliciosos de OpenSSF, muestreados con semilla fija y uno por prefijo.
+- Scripts en `calibracion/` y resultados en `docs/calibracion.md`.
+
+**Qué demostró**
+- **El día cero malicioso no se puede medir hacia atrás.** Todas las versiones comprometidas que se
+  sondearon ya no existen ni en deps.dev ni en npm: queda solo el rastro del borrado.
+- **"Publicador nuevo" estaba mal definido.** Disparaba en el 9 % de las versiones legítimas de
+  npm, por equipos que rotan quién publica. Además, cors 2.8.6 y jsonwebtoken 9.0.3 empataban
+  exactamente con el ataque a event-stream (0,5613).
+  - Se añadió el filtro de "cuenta conocida": mantenedora en la versión anterior, o publicó alguna
+    de las 5 anteriores.
+  - Resultado: la señal dispara en el 2 % de los legítimos, "media" en legítimos baja de 4 a 1, y
+    event-stream 3.3.5 sigue detectado.
+- **No se cambió ningún peso:** con este corpus no hay datos que lo justifiquen. Queda propuesto
+  subir `version-retirada` en npm, con un argumento de política y no con una medición.
+- **Límite honesto:** cors 2.8.6 (legítimo) sigue empatado con el ataque. Con metadatos son
+  indistinguibles.
+- Nuevas grabaciones: event-stream 3.3.0 a 3.3.3, sin correos. `pytest`: 197 pasan.

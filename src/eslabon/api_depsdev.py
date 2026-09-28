@@ -48,23 +48,28 @@ class ClienteDepsDev(ClienteCacheado):
         return self._get(f"/projects/{quote(id_proyecto, safe='')}")
 
     def version_anterior(self, p: Paquete) -> str | None:
-        """La versión estable inmediatamente inferior en NÚMERO de versión (semver).
+        anteriores = self.versiones_anteriores(p, 1)
+        return anteriores[0] if anteriores else None
+
+    def versiones_anteriores(self, p: Paquete, cuantas: int) -> list[str]:
+        """Las `cuantas` versiones estables inmediatamente inferiores en NÚMERO de versión
+        (semver), de la más cercana a la más lejana.
 
         No se usa la fecha: un paquete con varias ramas publica backports (3.10.2) después
         de versiones de otra rama (4.x), y compararlas daría "publicador nuevo" sin cambio
         de dueño. Tampoco sirven las fechas de deps.dev para versiones antiguas: muchas
         comparten la misma fecha de importación. Se ignoran los tapones "-security" y las
-        pre-versiones (1.0.0-beta). Devuelve None si esta versión no figura en el registro.
+        pre-versiones (1.0.0-beta). Lista vacía si esta versión no figura en el registro.
         """
         esta = clave_semver(p.version)
         publicadas = {v["versionKey"]["version"]
                       for v in (self.paquete(p) or {}).get("versions", [])}
         if esta is None or p.version not in publicadas:
-            return None
+            return []
         previas = [(clave, v) for v in publicadas
                    if not es_tapon_seguridad(p.ecosistema, v)
                    and (clave := clave_semver(v)) is not None and clave[3] and clave < esta]
-        return max(previas)[1] if previas else None
+        return [v for _, v in sorted(previas, reverse=True)[:cuantas]]
 
     def repositorio_origen(self, p: Paquete) -> str | None:
         """Repositorio de código fuente del paquete, p. ej. "github.com/psf/requests".

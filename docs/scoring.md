@@ -150,7 +150,7 @@ y `lodash` (paquetes sanos) aparecían varias. Solo acompañan a una señal de v
 
 | Señal | p | Justificación |
 |---|---|---|
-| `npm-publicador-nuevo` | 0,35 | La versión la publicó una **cuenta** distinta de la que publicó la anterior. Es el mecanismo de las tomas de control por cesión o robo de cuenta (event-stream 3.3.5: `dominictarr` → `right9ctrl`). No es más alta porque los equipos rotan quién publica. Se compara la cuenta, no el correo: cambiar de correo no es cambiar de dueño (lodash cambió de correo con la misma cuenta). |
+| `npm-publicador-nuevo` | 0,35 | La versión la publicó una **cuenta** distinta de la que publicó la anterior **y desconocida en el paquete**: no era mantenedora en la versión anterior ni publicó ninguna de las 5 anteriores. Es el mecanismo de las tomas de control por cesión o robo de cuenta (event-stream 3.3.5: `dominictarr` → `right9ctrl`). El filtro de "cuenta conocida" salió de la calibración: sin él la señal disparaba en el 9 % de las versiones legítimas de npm (express, lodash, async: equipos que rotan quién publica); con él, en el 2 %, y sigue detectando event-stream. Se compara la cuenta, no el correo: cambiar de correo no es cambiar de dueño (lodash cambió de correo con la misma cuenta). |
 | `npm-script-instalacion-red` | 0,35 | Un `preinstall`/`install`/`postinstall` que descarga o ejecuta código (`curl`, `wget`, una URL, `node -e`, `eval`, base64…). Ese script corre con los permisos de quien instala, antes de que nadie revise nada. |
 | `npm-script-instalacion` | 0,05 | Un script de instalación "normal" (p. ej. `node-gyp rebuild` para compilar código nativo). Solo contexto: **no genera hallazgo** por sí solo. |
 
@@ -199,10 +199,12 @@ lo honesto es calibrar los pesos con datos (ver §6), no subirlos a mano.
 ## 6. Límites (dichos sin maquillar)
 
 - **Los pesos son estimaciones ordinales, no probabilidades medidas.** Ordenan bien (MAL- > CWE-506 >
-  texto > heurística fuerte > heurística débil > higiene), pero los valores exactos no se calibraron
-  contra un corpus. La forma de calibrarlos: correr eslabon sobre (a) los paquetes de OpenSSF Malicious
-  Packages y (b) los top-N de cada registro, y ajustar cada `p` a la tasa de acierto observada de su
-  señal.
+  texto > heurística fuerte > heurística débil > higiene). La calibración de F7
+  ([`calibracion.md`](calibracion.md)) midió cada señal sobre 425 paquetes (300 legítimos, 25
+  comprometidos y 100 maliciosos). **No se cambió ningún peso:** los datos señalaron un problema de
+  *definición* ("publicador nuevo" disparaba con equipos que rotan quién publica), no de número. Y
+  la parte maliciosa del día cero no se puede medir hacia atrás: los registros borran las versiones
+  comprometidas.
 - **El supuesto de independencia entre fuentes es aproximado.** Por ejemplo, GuardDog y Scorecard
   pueden estar correlacionados en paquetes abandonados. La regla 2 mitiga la dependencia dentro de una
   misma fuente, no entre fuentes.

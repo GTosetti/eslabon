@@ -142,3 +142,42 @@ def test_si_deps_dev_falla_se_conservan_las_senales_de_npm(ctx):
         ctx, {"_npmUser": {"name": "a"}, "scripts": {"postinstall": "curl https://x.test"}},
         depsdev=ClienteDepsDev(obtener=cae)))
     assert _senales(h) == ["npm-script-instalacion-red"]
+
+
+# --- Calibración (F7): una cuenta "de la casa" no es un publicador nuevo --------------------
+_FECHAS = [("0.7.0", "2024-01-01T00:00:00Z"), ("0.8.0", "2024-02-01T00:00:00Z"),
+           ("0.9.0", "2024-03-01T00:00:00Z"), ("1.0.0", "2024-04-01T00:00:00Z")]
+
+
+def _publicador(documentos, ctx):
+    contexto = replace(ctx, npm=ClienteNpm(obtener=lambda ruta, t: documentos.get(ruta)),
+                       depsdev=_depsdev_con_versiones(*_FECHAS))
+    h = analizar_paquete(paquete_desde_texto("npm:x@1.0.0"), contexto)
+    return h is not None and "npm-publicador-nuevo" in _senales(h)
+
+
+def test_mantenedora_de_la_version_anterior_no_es_publicador_nuevo(ctx):
+    # Caso real medido: express 4.22.1 la publicó "jonchurch", ya mantenedor de 4.22.0.
+    assert not _publicador({
+        "/x/1.0.0": {"_npmUser": {"name": "ana"}},
+        "/x/0.9.0": {"_npmUser": {"name": "beto"}, "maintainers": [{"name": "ana"}]},
+    }, ctx)
+
+
+def test_quien_ya_publico_una_version_previa_no_es_publicador_nuevo(ctx):
+    # Caso real medido: yargs 17.7.3 la publicó "shadowspawn", que ya había publicado yargs.
+    assert not _publicador({
+        "/x/1.0.0": {"_npmUser": {"name": "ana"}},
+        "/x/0.9.0": {"_npmUser": {"name": "beto"}},
+        "/x/0.8.0": {"_npmUser": {"name": "beto"}},
+        "/x/0.7.0": {"_npmUser": {"name": "ana"}},
+    }, ctx)
+
+
+def test_cuenta_desconocida_si_es_publicador_nuevo(ctx):
+    assert _publicador({
+        "/x/1.0.0": {"_npmUser": {"name": "desconocida"}},
+        "/x/0.9.0": {"_npmUser": {"name": "beto"}, "maintainers": [{"name": "beto"}]},
+        "/x/0.8.0": {"_npmUser": {"name": "beto"}},
+        "/x/0.7.0": {"_npmUser": {"name": "beto"}},
+    }, ctx)

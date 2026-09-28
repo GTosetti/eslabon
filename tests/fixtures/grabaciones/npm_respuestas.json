@@ -96,5 +96,73 @@
     "name": "bnjmnt4n"
    }
   ]
+ },
+ "/event-stream/3.3.3": {
+  "name": "event-stream",
+  "version": "3.3.3",
+  "_npmUser": {
+   "name": "dominictarr"
+  },
+  "maintainers": [
+   {
+    "name": "dominictarr"
+   }
+  ],
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  }
+ },
+ "/event-stream/3.3.2": {
+  "name": "event-stream",
+  "version": "3.3.2",
+  "_npmUser": {
+   "name": "dominictarr"
+  },
+  "maintainers": [
+   {
+    "name": "dominictarr"
+   }
+  ],
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  }
+ },
+ "/event-stream/3.3.1": {
+  "name": "event-stream",
+  "version": "3.3.1",
+  "_npmUser": {
+   "name": "dominictarr"
+  },
+  "maintainers": [
+   {
+    "name": "dominictarr"
+   }
+  ],
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  }
+ },
+ "/event-stream/3.3.0": {
+  "name": "event-stream",
+  "version": "3.3.0",
+  "_npmUser": {
+   "name": "dominictarr"
+  },
+  "maintainers": [
+   {
+    "name": "dominictarr"
+   }
+  ],
+  "scripts": {
+   "test": "asynct test/",
+   "test_tap": "set -e; for t in test/*.js; do node $t; done",
+   "prepublish": "npm ls && npm test"
+  }
  }
 }

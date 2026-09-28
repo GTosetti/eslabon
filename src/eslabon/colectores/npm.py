@@ -2,10 +2,14 @@
 
 Señales:
 - Publicador nuevo: la versión la publicó una cuenta DISTINTA de la que publicó la versión
-  anterior. Es el patrón de una cuenta robada o de un paquete cedido a un desconocido.
-  Caso real (grabado en los tests): event-stream 3.3.4 la publicó "dominictarr" y 3.3.5,
-  dos años después, "right9ctrl", la cuenta del atacante que luego añadió flatmap-stream.
-  Esa versión 3.3.5 no tiene ningún aviso ni CVE: solo la delatan señales débiles.
+  anterior, y que no era conocida en el paquete: no figuraba como mantenedora en la versión
+  anterior ni publicó ninguna de las 5 anteriores. Es el patrón de una cuenta robada o de
+  un paquete cedido a un desconocido. Caso real (grabado en los tests): event-stream 3.3.4
+  la publicó "dominictarr" y 3.3.5, dos años después, "right9ctrl", la cuenta del atacante
+  que luego añadió flatmap-stream. Esa versión 3.3.5 no tiene ningún aviso ni CVE: solo la
+  delatan señales débiles. El filtro de "cuenta conocida" sale de la calibración
+  (docs/calibracion.md): sin él, la señal disparaba en el 9 % de las versiones legítimas
+  (equipos que rotan quién publica).
 - Script de instalación (preinstall/install/postinstall): se ejecuta en la máquina de quien
   instala. Solo es CONTEXTO (muchos paquetes sanos compilan código nativo al instalarse),
   salvo que el script descargue o ejecute código: entonces es una señal por sí mismo.
@@ -38,6 +42,10 @@ _SCRIPT_CON_RED = re.compile(
 # del mantenedor a publicar desde su CI es una buena práctica, no un cambio de dueño.
 _PUBLICADORES_CI = {"GitHub Actions"}
 
+# Cuántas versiones anteriores se miran para saber si la cuenta ya había publicado el paquete.
+# Se piden de a una (KB): el documento completo del paquete puede superar los 20 MB.
+VERSIONES_HISTORIAL = 5
+
 
 class ColectorNpm(Colector):
     nombre = "npm"
@@ -56,11 +64,15 @@ def analizar_paquete(p: Paquete, ctx: Contexto) -> Finding | None:
     url = f"https://www.npmjs.com/package/{p.nombre}/v/{p.version}"
 
     publicador = (doc.get("_npmUser") or {}).get("name")
-    anterior = _version_anterior(p, ctx) if publicador else None
-    if anterior:
-        previo = ((ctx.npm.version(p, anterior) or {}).get("_npmUser") or {}).get("name")
+    anteriores = _versiones_anteriores(p, ctx) if publicador else []
+    if anteriores:
+        anterior = anteriores[0]
+        doc_anterior = ctx.npm.version(p, anterior) or {}
+        previo = (doc_anterior.get("_npmUser") or {}).get("name")
         # Se compara la CUENTA, no el correo: cambiar de correo no es cambiar de dueño.
-        if previo and previo != publicador and _PUBLICADORES_CI.isdisjoint({previo, publicador}):
+        if (previo and previo != publicador
+                and _PUBLICADORES_CI.isdisjoint({previo, publicador})
+                and not _cuenta_conocida(publicador, doc_anterior, p, anteriores[1:], ctx)):
             evidencias.append(evidencia(
                 ColectorNpm.nombre, "npm-publicador-nuevo",
                 f"{p.version} la publicó '{publicador}'; la anterior ({anterior}), '{previo}'",
@@ -81,11 +93,23 @@ def analizar_paquete(p: Paquete, ctx: Contexto) -> Finding | None:
     return hallazgo_si_hay_senal(p, evidencias)
 
 
-def _version_anterior(p: Paquete, ctx: Contexto) -> str | None:
-    """Versión anterior según deps.dev. Si deps.dev falla, se omite SOLO esta comparación:
+def _cuenta_conocida(publicador: str, doc_anterior: dict, p: Paquete, otras: list[str],
+                     ctx: Contexto) -> bool:
+    """¿La cuenta ya era de la casa? Mantenedora en la versión anterior, o publicó otra previa.
+
+    Un equipo que rota quién publica no es un cambio de dueño (express, lodash, async...).
+    """
+    if publicador in {m.get("name") for m in doc_anterior.get("maintainers") or []}:
+        return True
+    return any(((ctx.npm.version(p, v) or {}).get("_npmUser") or {}).get("name") == publicador
+               for v in otras)
+
+
+def _versiones_anteriores(p: Paquete, ctx: Contexto) -> list[str]:
+    """Versiones anteriores según deps.dev. Si deps.dev falla, se omite SOLO esta comparación:
     las señales del propio registro de npm (scripts) no dependen de deps.dev, y el fallo de
     deps.dev ya lo informa su propio colector en fuentes_omitidas."""
     try:
-        return ctx.depsdev.version_anterior(p)
+        return ctx.depsdev.versiones_anteriores(p, VERSIONES_HISTORIAL)
     except Exception:  # noqa: BLE001
-        return None
+        return []
