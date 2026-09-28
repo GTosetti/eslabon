@@ -52,6 +52,10 @@ Añadir a `ossec.conf` del agente (Windows: `C:\Program Files (x86)\ossec-agent\
 </localfile>
 ```
 
+> **El nombre importa:** la regla base solo acepta eventos de un fichero que termine en
+> `eventos.jsonl`. Así, otra fuente JSON que llegue al manager no puede fabricar alertas de eslabon.
+> Con otro nombre, los eventos llegan pero no generan ninguna alerta.
+>
 > **Dónde guardar el fichero.** Conviene una carpeta dentro del perfil del usuario que ejecuta
 > eslabon, no `C:\eslabon\`. Una carpeta creada en la raíz de `C:` hereda permisos de modificación
 > para "Usuarios autenticados": cualquier usuario local podría inyectar eventos falsos o borrar los
@@ -116,7 +120,7 @@ schtasks /Delete /TN "eslabon\escaneo-diario" /F    # quitarla
 
 | ID | Nivel | Condición | MITRE |
 |---|---|---|---|
-| 100100 | 0 | Base: cualquier evento de eslabon (fichero JSON) | — |
+| 100100 | 0 | Base: evento de eslabon (JSON con `eslabon.evento`) leído de un fichero cuyo nombre **termina en `eventos.jsonl`** | — |
 | 100110 | **14** | `tipo = malicioso` | T1195.001 |
 | 100120 | 10 | `tipo = sospechoso` y severidad alta/crítica | T1195.001 |
 | 100121 | 7 | `tipo = sospechoso` y severidad media | T1195.001 |

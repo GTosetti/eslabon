@@ -1,0 +1,406 @@
+[
+ {
+  "nombre": "lodash",
+  "publicadas": 117,
+  "retiradas": []
+ },
+ {
+  "nombre": "react",
+  "publicadas": 2957,
+  "retiradas": []
+ },
+ {
+  "nombre": "react-dom",
+  "publicadas": 2912,
+  "retiradas": []
+ },
+ {
+  "nombre": "express",
+  "publicadas": 319,
+  "retiradas": [
+   "1.0.0beta",
+   "1.0.0beta2",
+   "1.0.0rc",
+   "1.0.0rc2",
+   "1.0.0rc3",
+   "1.0.0rc4",
+   "2.0.0-pre",
+   "2.0.0beta",
+   "2.0.0beta2",
+   "2.0.0beta3",
+   "2.0.0rc",
+   "2.0.0rc2",
+   "2.0.0rc3",
+   "3.0.0alpha1",
+   "3.0.0alpha2",
+   "3.0.0alpha3",
+   "3.0.0alpha4",
+   "3.0.0alpha5",
+   "3.0.0beta1",
+   "3.0.0beta2",
+   "3.0.0beta3",
+   "3.0.0beta4",
+   "3.0.0beta5",
+   "3.0.0beta6",
+   "3.0.0beta7",
+   "3.0.0rc1",
+   "3.0.0rc2",
+   "3.0.0rc3",
+   "3.0.0rc4",
+   "3.0.0rc5"
+  ]
+ },
+ {
+  "nombre": "axios",
+  "publicadas": 147,
+  "retiradas": [
+   "0.30.4",
+   "1.14.1"
+  ]
+ },
+ {
+  "nombre": "chalk",
+  "publicadas": 46,
+  "retiradas": [
+   "5.6.1"
+  ]
+ },
+ {
+  "nombre": "debug",
+  "publicadas": 78,
+  "retiradas": [
+   "4.4.2"
+  ]
+ },
+ {
+  "nombre": "commander",
+  "publicadas": 125,
+  "retiradas": [
+   "2.20.2"
+  ]
+ },
+ {
+  "nombre": "moment",
+  "publicadas": 80,
+  "retiradas": [
+   "2.10.0",
+   "2.10.1",
+   "2.8.0"
+  ]
+ },
+ {
+  "nombre": "dayjs",
+  "publicadas": 136,
+  "retiradas": []
+ },
+ {
+  "nombre": "uuid",
+  "publicadas": 55,
+  "retiradas": []
+ },
+ {
+  "nombre": "semver",
+  "publicadas": 119,
+  "retiradas": []
+ },
+ {
+  "nombre": "yargs",
+  "publicadas": 267,
+  "retiradas": []
+ },
+ {
+  "nombre": "glob",
+  "publicadas": 184,
+  "retiradas": [
+   "1.0.0",
+   "1.0.1",
+   "1.0.2",
+   "1.0.3",
+   "2.0.0",
+   "2.0.1",
+   "2.0.2",
+   "2.0.3",
+   "2.0.4",
+   "2.0.5",
+   "2.0.6",
+   "2.0.7-bindist-testing",
+   "4.1.0",
+   "4.1.1",
+   "4.4.1",
+   "6.0.0"
+  ]
+ },
+ {
+  "nombre": "rimraf",
+  "publicadas": 87,
+  "retiradas": [
+   "2.2.7"
+  ]
+ },
+ {
+  "nombre": "mkdirp",
+  "publicadas": 42,
+  "retiradas": []
+ },
+ {
+  "nombre": "minimist",
+  "publicadas": 31,
+  "retiradas": []
+ },
+ {
+  "nombre": "fs-extra",
+  "publicadas": 105,
+  "retiradas": []
+ },
+ {
+  "nombre": "body-parser",
+  "publicadas": 85,
+  "retiradas": []
+ },
+ {
+  "nombre": "cors",
+  "publicadas": 35,
+  "retiradas": []
+ },
+ {
+  "nombre": "dotenv",
+  "publicadas": 109,
+  "retiradas": []
+ },
+ {
+  "nombre": "jsonwebtoken",
+  "publicadas": 82,
+  "retiradas": []
+ },
+ {
+  "nombre": "bcryptjs",
+  "publicadas": 31,
+  "retiradas": [
+   "0.7.11"
+  ]
+ },
+ {
+  "nombre": "typescript",
+  "publicadas": 3840,
+  "retiradas": [
+   "1.6.0-dev.20150722",
+   "1.9.0",
+   "2.7.0-insider.20180119"
+  ]
+ },
+ {
+  "nombre": "webpack",
+  "publicadas": 893,
+  "retiradas": [
+   "0.9.0-beta3",
+   "1.0.0-rc10",
+   "1.0.2",
+   "2.0.3-beta"
+  ]
+ },
+ {
+  "nombre": "eslint",
+  "publicadas": 431,
+  "retiradas": [
+   "0.7.0"
+  ]
+ },
+ {
+  "nombre": "prettier",
+  "publicadas": 199,
+  "retiradas": [
+   "1.6.0-beta"
+  ]
+ },
+ {
+  "nombre": "jest",
+  "publicadas": 384,
+  "retiradas": [
+   "23.0.0-alpha.0"
+  ]
+ },
+ {
+  "nombre": "mocha",
+  "publicadas": 251,
+  "retiradas": [
+   "3.4.0"
+  ]
+ },
+ {
+  "nombre": "vue",
+  "publicadas": 595,
+  "retiradas": [
+   "0.8.5"
+  ]
+ },
+ {
+  "nombre": "next",
+  "publicadas": 3961,
+  "retiradas": []
+ },
+ {
+  "nombre": "rxjs",
+  "publicadas": 170,
+  "retiradas": [
+   "1.0.10621",
+   "5.3.2",
+   "5.5.0-beta.6"
+  ]
+ },
+ {
+  "nombre": "underscore",
+  "publicadas": 55,
+  "retiradas": []
+ },
+ {
+  "nombre": "async",
+  "publicadas": 94,
+  "retiradas": [
+   "0.1.23"
+  ]
+ },
+ {
+  "nombre": "bluebird",
+  "publicadas": 228,
+  "retiradas": [
+   "2.0.0",
+   "2.0.1",
+   "2.1.0",
+   "2.3.7",
+   "2.3.8"
+  ]
+ },
+ {
+  "nombre": "request",
+  "publicadas": 126,
+  "retiradas": []
+ },
+ {
+  "nombre": "ws",
+  "publicadas": 191,
+  "retiradas": [
+   "0.2.7",
+   "0.4.4"
+  ]
+ },
+ {
+  "nombre": "socket.io",
+  "publicadas": 162,
+  "retiradas": []
+ },
+ {
+  "nombre": "mongoose",
+  "publicadas": 1032,
+  "retiradas": [
+   "1.7.0",
+   "1.7.1",
+   "3.0.0alpha1",
+   "3.0.0alpha2",
+   "3.0.0rc0",
+   "3.1.2",
+   "3.1.2-pre",
+   "3.6.0",
+   "3.6.0rc0",
+   "3.6.0rc1",
+   "3.6.1",
+   "3.6.1-pre",
+   "3.7.1",
+   "4.1.4"
+  ]
+ },
+ {
+  "nombre": "redis",
+  "publicadas": 187,
+  "retiradas": []
+ },
+ {
+  "nombre": "pg",
+  "publicadas": 275,
+  "retiradas": [
+   "0.0.1",
+   "0.0.2",
+   "0.0.3",
+   "0.0.4",
+   "0.0.5",
+   "0.0.6",
+   "0.1.0",
+   "0.1.1",
+   "0.1.2",
+   "0.1.3",
+   "0.2.0",
+   "0.2.2",
+   "0.2.3",
+   "0.2.4",
+   "0.2.5",
+   "0.2.6",
+   "0.2.7",
+   "0.2.8",
+   "0.3.0",
+   "0.3.2",
+   "0.3.3",
+   "0.4.0",
+   "3.0.0",
+   "3.0.1",
+   "4.0.0-beta1",
+   "5.2.0"
+  ]
+ },
+ {
+  "nombre": "mysql2",
+  "publicadas": 325,
+  "retiradas": []
+ },
+ {
+  "nombre": "sequelize",
+  "publicadas": 632,
+  "retiradas": [
+   "1.5.1-alpha-1",
+   "4.35.6",
+   "5.0.0",
+   "5.0.1",
+   "6.0.0"
+  ]
+ },
+ {
+  "nombre": "cheerio",
+  "publicadas": 75,
+  "retiradas": [
+   "0.21.0"
+  ]
+ },
+ {
+  "nombre": "node-fetch",
+  "publicadas": 96,
+  "retiradas": []
+ },
+ {
+  "nombre": "qs",
+  "publicadas": 150,
+  "retiradas": []
+ },
+ {
+  "nombre": "classnames",
+  "publicadas": 30,
+  "retiradas": []
+ },
+ {
+  "nombre": "prop-types",
+  "publicadas": 24,
+  "retiradas": []
+ },
+ {
+  "nombre": "tslib",
+  "publicadas": 48,
+  "retiradas": [
+   "0.0.1",
+   "0.0.2"
+  ]
+ },
+ {
+  "nombre": "date-fns",
+  "publicadas": 210,
+  "retiradas": [
+   "1.30.0"
+  ]
+ }
+]

@@ -455,3 +455,31 @@
 - En un SIEM, el tiempo es un dato más, y puede estar mal. Antes de concluir "no llegó", hay que
   mirar más allá de la ventana de búsqueda y comprobar el camino entero: el colector del agente
   contó las líneas y el índice tenía las alertas.
+
+## F9: últimos pendientes y manual de usuario (2026-09-28)
+
+### P1: la regla base solo acepta el fichero de eslabon
+
+**Qué se hizo:** la regla 100100 exige `<location>eventos.jsonl$</location>`. Se añadieron al
+simulador de los tests la comprobación de `<location>` y un test negativo. En el lab, con
+autorización, se siguió el mismo procedimiento que en F8.
+
+**Qué demostró**
+- Logtest del mismo evento malicioso desde tres ubicaciones:
+  - desde el fichero de eslabon: 100110, nivel 14;
+  - desde `app.json` o `eve.json`: no se reconoce como eslabon (regla genérica 1002).
+- El agente real sigue generando alertas tras el cambio.
+- Riesgo residual: otro fichero que también termine en `eventos.jsonl`.
+
+### "Versión retirada" en npm
+
+**Qué se hizo:** `calibracion/retiradas_npm.py` mide, con el campo `time` de npm, cuántas versiones
+de paquetes legítimos desaparecieron.
+
+**Qué demostró**
+- 128 de 22 813 versiones (0,56 %), casi todas antiguas o pre-versiones.
+- Discrimina unas 170 veces, pero por la tasa base una sola señal debe seguir en "baja". El peso
+  se mantiene en 0,40, ahora con un dato que lo respalda.
+
+**Qué aprendiste:** que una señal distinga muy bien no significa que haya que subirle el peso. Si
+lo que busca es muy raro, sola sigue siendo un indicio y no una conclusión (tasa base).

@@ -18,8 +18,13 @@
        <log_format>json</log_format> y Wazuh lo decodifica con su decoder "json" incorporado.
        (No hay vía por syslog: su regla usaba un decoder propio que, si no estaba instalado,
        hacía que el manager rechazara el fichero entero. Validado en el lab, ver README.) -->
+  <!-- P1 (revisión de valores inseguros por defecto): solo eventos leídos de un fichero que
+       termine en "eventos.jsonl". Sin esto, cualquier otra fuente JSON que llegue al manager
+       (logs de una aplicación, eve.json...) con un campo eslabon.evento podría fabricar una
+       alerta de nivel 14. En sregex (el tipo por defecto), "." es literal y "$" es "termina en". -->
   <rule id="100100" level="0">
     <decoded_as>json</decoded_as>
+    <location>eventos.jsonl$</location>
     <field name="eslabon.evento">\.+</field>
     <description>eslabon: evento de análisis de supply chain</description>
   </rule>

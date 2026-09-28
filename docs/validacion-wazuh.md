@@ -133,7 +133,24 @@ Recomendación: sincronizar por NTP la VM del manager y el host.
 ## Pendiente
 
 - ~~Escaneo programado y rotación de `eventos.jsonl`~~: hechos en F6.
-- **P1:** limitar la regla base 100100 a eventos del fichero de eslabon (`<location>`) o del grupo
-  `eslabon`, para que otra fuente JSON no pueda generar alertas falsas de eslabon.
+- ~~P1: limitar la regla base 100100~~: hecho en F9 (ver abajo).
 - **NTP** en la VM del manager y en el host (ver el desfase de relojes en F8).
 - Evaluar `<options>no_full_log</options>` para no duplicar el JSON completo en cada alerta.
+
+## F9: la regla base solo acepta el fichero de eslabon (P1)
+
+Con autorización del usuario, se hizo el mismo procedimiento que en F8: validación local con el
+validador oficial (OK), copia de la versión anterior para volver atrás, subida, validación en el
+manager (OK) y reinicio.
+
+**Logtest con el MISMO evento malicioso (flatmap-stream) desde tres ubicaciones:**
+
+| Ubicación | Resultado |
+|---|---|
+| `...\eslabon\resultados\eventos.jsonl` | **100110**, nivel 14 |
+| `C:\app\logs\app.json` | regla genérica de Wazuh 1002, nivel 2: **no** se reconoce como eslabon |
+| `/var/log/suricata/eve.json` | regla genérica de Wazuh 1002, nivel 2: **no** se reconoce como eslabon |
+
+**Punta a punta:** tras el cambio, un escaneo real de `jinja2@2.10` que escribió en el fichero del
+agente generó sus alertas (100141 y 100142) desde `HOST-ESLABON`. La búsqueda empezó dos minutos
+antes, por el desfase de reloj de F8.

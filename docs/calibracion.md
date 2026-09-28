@@ -129,13 +129,19 @@ lugar del documento completo del paquete, que en typescript supera los 20 MB. Te
 - **No hay tasa de acierto del día cero para el lado malicioso** (sección 2). Los pesos de
   `publicador-nuevo`, `reactivacion` y los scripts de instalación siguen siendo estimaciones sobre
   un único caso vivo.
-- **Las señales del rastro del borrado no tienen tasa de falsos positivos medida.**
-  - `version-retirada` (0,40) detectó el 96 % de los comprometidos, pero el corpus legítimo no puede
-    medir con qué frecuencia desaparecen versiones sanas.
-  - Hay un argumento de política (no una medición) para subir ese peso en npm: desde 2016 npm no
-    deja despublicar después de 72 h, así que una versión que desaparece de un lockfile casi
-    siempre la retiró el registro. En PyPI, en cambio, el dueño puede borrar cuando quiera.
-  - **Queda propuesto, no aplicado.**
+- **`version-retirada` en npm: medida después (F9); el peso se mantiene en 0,40.** Detectó el 96 %
+  de los comprometidos, pero el corpus legítimo no podía medir su tasa de falsos positivos (ver la
+  sección 3, \*). `calibracion/retiradas_npm.py` lo midió con el campo `time` de npm, que conserva
+  todas las versiones publicadas alguna vez:
+  - **128 de 22 813 versiones (0,56 %)** de los 50 paquetes legítimos desaparecieron;
+  - 26 de 50 paquetes tienen alguna, casi todas antiguas o pre-versiones (`1.0.0beta` de express,
+    `0.0.x` de pg), anteriores a la política de 2016 que prohíbe despublicar después de 72 h.
+
+  La señal **discrimina muy bien**: la razón de verosimilitud es de unas 170 veces (96 % frente a
+  0,56 %). Pero las versiones comprometidas son rarísimas entre las que hay en un lockfile. Con esa
+  tasa base, una sola señal no alcanza para "media": el 0,40 ("baja": algo que hay que mirar) es
+  coherente con el dato. No se sube; queda medido y justificado. En PyPI no se midió: su API no
+  conserva las versiones borradas.
 - **2 de 50 maliciosos de npm no dan ninguna señal sin OSV:** `bx-ui-view` y
   `framerate-interaction-permissions` siguen publicados y sin tapón. Contra un paquete malicioso
   todavía activo y sin aviso, eslabon depende de GuardDog, que aquí no se ejecutó.

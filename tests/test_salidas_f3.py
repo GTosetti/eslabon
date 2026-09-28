@@ -217,7 +217,21 @@ def _os_regex(patron: str, valor: str) -> bool:
     return re.search(patron.replace(r"\.", "."), valor) is not None
 
 
-def _regla_que_dispara(evento: dict, decoder: str = "json") -> int:
+def _sregex(patron: str, valor: str) -> bool:
+    """Simulación mínima de sregex/OS_Match (tipo por defecto de <location>): "." es literal,
+    "^" y "$" anclan al principio y al final."""
+    if patron.startswith("^") and patron.endswith("$"):
+        return valor == patron[1:-1]
+    if patron.endswith("$"):
+        return valor.endswith(patron[:-1])
+    if patron.startswith("^"):
+        return valor.startswith(patron[1:])
+    return patron in valor
+
+
+def _regla_que_dispara(evento: dict, decoder: str = "json",
+                       ubicacion: str = r"C:\Users\x\eslabon\eventos.jsonl") -> int | None:
+    """Regla de eslabon que dispara el evento, o None si no lo reconoce ninguna."""
     # El decoder json de Wazuh deja los booleanos como "true"/"false" (no "True").
     campos = {f"eslabon.{k}": json.dumps(v) if isinstance(v, bool) else str(v)
               for k, v in evento["eslabon"].items()}
@@ -226,11 +240,15 @@ def _regla_que_dispara(evento: dict, decoder: str = "json") -> int:
     def cumple(regla):
         if regla.findtext("decoded_as") not in (None, decoder):
             return False
+        if (lugar := regla.findtext("location")) and not _sregex(lugar, ubicacion):
+            return False
         return all(f.get("name") in campos and _os_regex(f.text, campos[f.get("name")])
                    for f in regla.findall("field"))
 
     base = [r for r in reglas if r.find("if_sid") is None and cumple(r)]
-    assert len(base) == 1, "debe coincidir exactamente una regla base"
+    assert len(base) <= 1, "no puede coincidir más de una regla base"
+    if not base:
+        return None
     hijas = [r for r in reglas if base[0].get("id") in (r.findtext("if_sid") or "") and cumple(r)]
     assert len(hijas) == 1, f"coinciden {len(hijas)} reglas hijas para {evento}"
     return int(hijas[0].get("id"))
@@ -278,6 +296,16 @@ def test_wazuh_escaneo_incompleto_y_error_programado(resultado):
     [resumen] = [e for e in _eventos(incompleto) if e["eslabon"]["evento"] == "resumen"]
     assert _regla_que_dispara(resumen) == 100161
     assert _regla_que_dispara(_ERROR_PROGRAMADO) == 100170
+
+
+def test_wazuh_solo_acepta_eventos_del_fichero_de_eslabon(resultado):
+    # P1: un JSON con eslabon.evento que llega desde OTRO fichero (p. ej. los logs de una
+    # aplicación que un atacante controla) no puede fabricar una alerta de eslabon.
+    malicioso = next(e for e in _eventos(resultado) if e["eslabon"].get("tipo") == "malicioso")
+    assert _regla_que_dispara(malicioso) == 100110
+    for otro in (r"C:\app\logs\app.json", "/var/log/suricata/eve.json",
+                 r"C:\x\eventos.jsonl.falso"):
+        assert _regla_que_dispara(malicioso, ubicacion=otro) is None
 
 
 def test_wazuh_variables_de_la_descripcion_existen(resultado):
