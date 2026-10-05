@@ -29,3 +29,7 @@ Thumbs.db
 .DS_Store
 .vscode/
 .idea/
+
+# Notas internas de trabajo (no se publican)
+CLAUDE.md
+PROMPT-INICIAL.md
